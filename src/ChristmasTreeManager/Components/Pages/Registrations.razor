@@ -26,7 +26,7 @@
 
     protected async Task EditRow(DataGridRowMouseEventArgs<Registration> args)
     {
-        await DialogService.OpenAsync<EditRegistration>("Anmeldung bearbeiten", new Dictionary<string, object> { { "Id", args.Data.Id } });
+        await DialogService.OpenAsync<EditRegistration>("Anmeldung bearbeiten", new Dictionary<string, object> { { "Id", args.Data.Id! } });
 
         registrations = await ApplicationDbService.GetRegistrations(new Query { Expand = "RegistrationPoint,Street" });
         await grid0.Reload();
@@ -38,7 +38,7 @@
         {
             if (await DialogService.Confirm("Sind Sie sicher, dass Sie diese Sammlungstour l&ouml;schen wollen?") == true)
             {
-                var deleteResult = await ApplicationDbService.DeleteRegistration(registration.Id);
+                var deleteResult = await ApplicationDbService.DeleteRegistration(registration.Id!);
                 if (deleteResult != null)
                 {
                     await grid0.Reload();

@@ -18,6 +18,8 @@ public class Registration
 
     public uint? Housenumber { get; set; }
 
+    public string HousenumberPostfix { get; set; } = string.Empty;
+
     public string? DisplayHousenumber { get; set; }
 
     public string Phone { get; set; } = string.Empty;
@@ -56,6 +58,7 @@ public class Registration
             StreetId = entity.StreetId,
             Street = entity.Street.DisplayName,
             Housenumber = entity.Housenumber,
+            HousenumberPostfix = entity.HousenumberPostfix,
             DisplayHousenumber = entity.DisplayHousenumber,
             Phone = entity.Phone ?? string.Empty,
             Mail = entity.Mail ?? string.Empty,
@@ -75,6 +78,7 @@ public class Registration
             Customer = Customer ?? throw new InvalidOperationException("Property [Registration.Customer] is null!"),
             StreetId = StreetId ?? throw new InvalidOperationException("Property [Registration.StreetId] is null!"),
             Housenumber = Housenumber ?? throw new InvalidOperationException("Property [Registration.Housenumber] is null!"),
+            HousenumberPostfix = HousenumberPostfix,
             Phone = Phone,
             Mail = Mail,
             TreeCount = TreeCount,

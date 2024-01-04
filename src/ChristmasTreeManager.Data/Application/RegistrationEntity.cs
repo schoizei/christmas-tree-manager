@@ -19,6 +19,8 @@ public class RegistrationEntity : AuditableEntity
 
     public required uint Housenumber { get; set; }
 
+    public string HousenumberPostfix { get; set; } = string.Empty;
+
     public string Phone { get; set; } = string.Empty;
 
     public string Mail { get; set; } = string.Empty;
@@ -33,9 +35,7 @@ public class RegistrationEntity : AuditableEntity
     {
         get
         {
-            var result = Housenumber.ToString() ?? string.Empty;
-
-            return result;
+            return Housenumber.ToString() + HousenumberPostfix;
         }
     }
 }
