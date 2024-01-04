@@ -1,0 +1,65 @@
+@layout LoginLayout
+@page "/login"
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@inject DialogService DialogService
+@inject ContextMenuService ContextMenuService
+@inject TooltipService TooltipService
+@inject NotificationService NotificationService
+
+<PageTitle>Login</PageTitle>
+<RadzenText Text="Login" TextStyle="Radzen.Blazor.TextStyle.H5" class="mb-4" TagName="Radzen.Blazor.TagName.H2" />
+<RadzenRow>
+    <RadzenColumn SizeMD="12">
+        <RadzenTemplateForm Action="@($" account/login?redirectUrl={redirectUrl}")" Data="@("login")" Method="post">
+            <RadzenAlert Shade="Radzen.Shade.Lighter" Variant="Radzen.Variant.Flat" Size="Radzen.AlertSize.Small" AlertStyle="Radzen.AlertStyle.Danger" Visible="@errorVisible">@error</RadzenAlert>
+            <RadzenAlert Shade="Radzen.Shade.Lighter" Variant="Radzen.Variant.Flat" Size="Radzen.AlertSize.Small" AlertStyle="Radzen.AlertStyle.Info" Visible="@infoVisible">@info</RadzenAlert>
+            <RadzenLogin AllowResetPassword="true" AllowRegister="true" ResetPassword="@ResetPassword" Register="@Register"
+                LoginText="Anmelden" RegisterText="Registrieren" PasswordText="Passwort" ResetPasswordText="Passwort zurücksetzen" UserText="E-Mail" RegisterMessageText="Sie sind noch nicht registriert?"/>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+</RadzenRow>
+
+@code {
+    [Inject]
+    protected SecurityService Security { get; set; } = null!;
+
+    protected string? redirectUrl;
+    protected string? error;
+    protected string? info;
+    protected bool errorVisible;
+    protected bool infoVisible;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var query = System.Web.HttpUtility.ParseQueryString(new Uri(NavigationManager.ToAbsoluteUri(NavigationManager.Uri).ToString()).Query);
+
+        error = query.Get("error");
+        info = query.Get("info");
+        redirectUrl = query.Get("redirectUrl");
+        errorVisible = !string.IsNullOrEmpty(error);
+        infoVisible = !string.IsNullOrEmpty(info);
+    }
+
+    protected async Task Register()
+    {
+        var result = await DialogService.OpenAsync<RegisterApplicationUser>("Neuen Benutzer registrieren");
+        if (result == true)
+        {
+            infoVisible = true;
+            info = "Anmeldung durchgeführt. Bitte prüfen Sie Ihre E-Mail für weitere Anweisungen.";
+        }
+    }
+
+    protected async Task ResetPassword()
+    {
+        var result = await DialogService.OpenAsync<ResetPassword>("Passwort zurücksetzen");
+        if (result == true)
+        {
+            infoVisible = true;
+
+            info = "Passwort erfolgreich zurückgesetzt. Bitte prüfen Sie Ihre E-Mail für weitere Anweisungen.";
+        }
+    }
+}

@@ -1,0 +1,58 @@
+@page "/registrations"@attribute [Authorize]@inject IJSRuntime JSRuntime@inject NavigationManager NavigationManager@inject DialogService DialogService@inject ContextMenuService ContextMenuService@inject TooltipService TooltipService@inject NotificationService NotificationService@inject ApplicationDbService ApplicationDbService<PageTitle>Anmeldungen</PageTitle><RadzenStack>    <RadzenRow AlignItems="AlignItems.Center">        <RadzenColumn Size="12" SizeMD="6">            <RadzenText Text="Anmeldungen" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />        </RadzenColumn>        <RadzenColumn Size="12" SizeMD="6">            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">                <RadzenSplitButton Icon="get_app" Text="Export" Click="@ExportClick" Variant="Variant.Flat" Shade="Shade.Lighter">                    <RadzenSplitButtonItem Text="Excel" Value="xlsx" />                    <RadzenSplitButtonItem Text="CSV" Value="csv" />                </RadzenSplitButton>                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddButtonClick" Variant="Variant.Flat" />            </RadzenStack>        </RadzenColumn>    </RadzenRow>    <RadzenRow>        <RadzenColumn SizeMD=12>            <RadzenDataGrid @ref="grid0" ColumnWidth="200px" AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30}) Data="@registrations" TItem="Registration" RowDoubleClick="@EditRow">                <Columns>                    <RadzenDataGridColumn TItem="Registration" Property="RegistrationDate" Title="Anmeldung">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="RegistrationPointName" Title="Annahmestelle">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="Customer" Title="Name">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="Street" Title="Straße">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="Housenumber" Title="Hausnummer">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="TreeCount" Title="Anzahl">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="Donation" Title="Betrag">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="Phone" Title="Telefon">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="Mail" Title="E-Mail">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="Comment" Title="Kommentar">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="CreatedAt" Title="Erstelldatum">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="CreatedBy" Title="Ersteller">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="UpdatedAt" Title="Änderungsdatum">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="UpdatedBy" Title="Bearbeiter">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">                        <Template Context="registration">                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium" Shade="Shade.Lighter" Variant="Variant.Flat" Click=@(args => GridDeleteButtonClick(args, registration)) @onclick:stopPropagation="true" />                        </Template>                    </RadzenDataGridColumn>                </Columns>            </RadzenDataGrid>        </RadzenColumn>    </RadzenRow></RadzenStack>@code {    [Inject]
+    protected SecurityService Security { get; set; } = null!;
+
+    protected IEnumerable<Registration> registrations = null!;
+    protected RadzenDataGrid<Registration> grid0 = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        registrations = await ApplicationDbService.GetRegistrations(new Query { Expand = "RegistrationPoint,Street" });
+    }
+
+    protected async Task AddButtonClick(MouseEventArgs args)
+    {
+        await DialogService.OpenAsync<AddRegistration>("Neue Anmeldung", null);
+
+        registrations = await ApplicationDbService.GetRegistrations(new Query { Expand = "RegistrationPoint,Street" });
+        await grid0.Reload();
+    }
+
+    protected async Task EditRow(DataGridRowMouseEventArgs<Registration> args)
+    {
+        await DialogService.OpenAsync<EditRegistration>("Anmeldung bearbeiten", new Dictionary<string, object> { { "Id", args.Data.Id } });
+
+        registrations = await ApplicationDbService.GetRegistrations(new Query { Expand = "RegistrationPoint,Street" });
+        await grid0.Reload();
+    }
+
+    protected async Task GridDeleteButtonClick(MouseEventArgs args, Registration registration)
+    {
+        try
+        {
+            if (await DialogService.Confirm("Sind Sie sicher, dass Sie diese Sammlungstour löschen wollen?") == true)
+            {
+                var deleteResult = await ApplicationDbService.DeleteRegistration(registration.Id);
+                if (deleteResult != null)
+                {
+                    await grid0.Reload();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify(new NotificationMessage                {                    Severity = NotificationSeverity.Error,                    Summary = $"Error",                    Detail = $"Anmeldung kann nicht gelöscht werden"                });
+        }
+    }
+
+    protected async Task ExportClick(RadzenSplitButtonItem args)
+    {
+        if (args?.Value == "csv")
+        {
+            await ApplicationDbService.ExportRegistrationsToCSV(new Query                {                    Filter = $@"{(string.IsNullOrEmpty(grid0.Query.Filter) ? "true" : grid0.Query.Filter)}",                    OrderBy = $"{grid0.Query.OrderBy}",                    Expand = "RegistrationPoint,Street",                    Select = string.Join(",", grid0.ColumnsCollection.Where(c => c.GetVisible() && !string.IsNullOrEmpty(c.Property)).Select(c => c.Property.Contains(".") ? c.Property + " as " + c.Property.Replace(".", "") : c.Property))                }, "Registrations");
+        }
+
+        if (args == null || args.Value == "xlsx")
+        {
+            await ApplicationDbService.ExportRegistrationsToExcel(new Query                {                    Filter = $@"{(string.IsNullOrEmpty(grid0.Query.Filter) ? "true" : grid0.Query.Filter)}",                    OrderBy = $"{grid0.Query.OrderBy}",                    Expand = "RegistrationPoint,Street",                    Select = string.Join(",", grid0.ColumnsCollection.Where(c => c.GetVisible() && !string.IsNullOrEmpty(c.Property)).Select(c => c.Property.Contains(".") ? c.Property + " as " + c.Property.Replace(".", "") : c.Property))                }, "Registrations");
+        }
+    }}

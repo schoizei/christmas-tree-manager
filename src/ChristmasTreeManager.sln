@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChristmasTreeManager.Data", "ChristmasTreeManager.Data\ChristmasTreeManager.Data.csproj", "{D58F193F-6B93-42AF-901D-994AD3EA883B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChristmasTreeManager.Infrastructure", "ChristmasTreeManager.Infrastructure\ChristmasTreeManager.Infrastructure.csproj", "{396CDE35-AE8D-4999-88F7-329AE90A1BB4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChristmasTreeManager", "ChristmasTreeManager\ChristmasTreeManager.csproj", "{B3FA6B8B-AC6C-494B-B7F1-7038A08CE772}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D58F193F-6B93-42AF-901D-994AD3EA883B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D58F193F-6B93-42AF-901D-994AD3EA883B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D58F193F-6B93-42AF-901D-994AD3EA883B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D58F193F-6B93-42AF-901D-994AD3EA883B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{396CDE35-AE8D-4999-88F7-329AE90A1BB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{396CDE35-AE8D-4999-88F7-329AE90A1BB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{396CDE35-AE8D-4999-88F7-329AE90A1BB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{396CDE35-AE8D-4999-88F7-329AE90A1BB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3FA6B8B-AC6C-494B-B7F1-7038A08CE772}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3FA6B8B-AC6C-494B-B7F1-7038A08CE772}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3FA6B8B-AC6C-494B-B7F1-7038A08CE772}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3FA6B8B-AC6C-494B-B7F1-7038A08CE772}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A637AAE4-BB8B-4502-9121-F2CEA1700043}
+	EndGlobalSection
+EndGlobal

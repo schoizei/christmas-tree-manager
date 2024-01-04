@@ -1,0 +1,107 @@
+@page "/edit-application-user/{Id}"
+
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@inject DialogService DialogService
+@inject ContextMenuService ContextMenuService
+@inject TooltipService TooltipService
+@inject NotificationService NotificationService
+
+@attribute [Authorize]
+
+<RadzenRow>
+    <RadzenColumn SizeMD="12">
+        <RadzenTemplateForm TItem="ApplicationUser" Data="@user" Visible="@(user != null)" Submit="@FormSubmit">
+            <RadzenAlert Title="Cannot update user" Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">@error</RadzenAlert>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Component="UserName" style="width: 100%" Text="Benutzername" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox Disabled="true" style="width: 100%" @bind-Value="@(user!.UserName)"
+                        Name="UserName" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Component="Email" style="width: 100%" Text="Email" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="width: 100%" @bind-Value="@(user!.Email)" Name="E-Mail" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Component="RoleNames" style="width: 100%" Text="Rollen" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDown Data="@roles" Multiple="true" style="width: 100%" TextProperty="Name"
+                        @bind-Value="@(userRoles)" ValueProperty="Id" Name="Roles" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Component="Password" style="width: 100%" Text="Passwort" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenPassword style="width: 100%" @bind-Value="@(user!.Password)" Name="Password" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Component="ConfirmPassword" style="width: 100%" Text="Passwort bestätigen" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenPassword style="width: 100%" @bind-Value="@(user!.ConfirmPassword)"
+                        Name="ConfirmPassword" />
+                    <RadzenCompareValidator Text="Passwords must match" Component="ConfirmPassword" Value="@user.Password" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Click="@CancelClick" Variant="Variant.Flat" />
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+</RadzenRow>
+
+@code {
+    [Inject]
+    protected SecurityService Security { get; set; } = null!;
+
+    [Parameter]
+    public required string Id { get; set; }
+
+    protected string error = string.Empty;
+    protected bool errorVisible;
+    protected ApplicationUser user = null!;
+    protected IEnumerable<string> userRoles = null!;
+    protected IEnumerable<ApplicationRole> roles = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await Security.GetUserById($"{Id}") ?? throw new InvalidOperationException("Failed to query Entity!");
+        userRoles = user.Roles.Select(role => role.Id);
+        roles = await Security.GetRoles();
+    }
+
+    protected async Task FormSubmit(ApplicationUser user)
+    {
+        try
+        {
+            user.Roles = roles.Where(role => userRoles.Contains(role.Id)).ToList();
+            await Security.UpdateUser($"{Id}", user);
+            DialogService.Close(null);
+        }
+        catch (Exception ex)
+        {
+            errorVisible = true;
+            error = ex.Message;
+        }
+    }
+
+    protected async Task CancelClick()
+    {
+        DialogService.Close(null);
+    }
+}
