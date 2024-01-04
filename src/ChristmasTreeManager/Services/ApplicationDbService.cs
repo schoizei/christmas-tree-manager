@@ -149,6 +149,7 @@ public class ApplicationDbService
         entryToUpdate.Entity.Customer = registration.Customer!;
         entryToUpdate.Entity.StreetId = registration.StreetId!;
         entryToUpdate.Entity.Housenumber = registration.Housenumber!.Value;
+        entryToUpdate.Entity.HousenumberPostfix = registration.HousenumberPostfix;
         entryToUpdate.Entity.Phone = registration.Phone!;
         entryToUpdate.Entity.Mail = registration.Mail!;
         entryToUpdate.Entity.TreeCount = registration.TreeCount;
