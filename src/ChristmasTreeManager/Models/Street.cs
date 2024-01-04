@@ -4,6 +4,16 @@ namespace ChristmasTreeManager.Models;
 
 public class Street
 {
+    public string? DisplayName
+    {
+        get
+        {
+            if (LowestHouseNumber > 1 || HighestHouseNumber < uint.MaxValue)
+                return $"{Name} [{LowestHouseNumber}-{HighestHouseNumber}]";
+            return Name;
+        }
+    }
+
     public string? Id { get; set; }
 
     public string? ZipCode { get; set; }
