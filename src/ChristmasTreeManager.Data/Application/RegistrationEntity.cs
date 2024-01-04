@@ -28,4 +28,14 @@ public class RegistrationEntity : AuditableEntity
     public double Donation { get; set; } = 0.0;
 
     public string Comment { get; set; } = string.Empty;
+
+    public string DisplayHousenumber
+    {
+        get
+        {
+            var result = Housenumber.ToString() ?? string.Empty;
+
+            return result;
+        }
+    }
 }

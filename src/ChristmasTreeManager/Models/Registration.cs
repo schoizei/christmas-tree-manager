@@ -1,4 +1,4 @@
-using ChristmasTreeManager.Data.Application;
+﻿using ChristmasTreeManager.Data.Application;
 
 namespace ChristmasTreeManager.Models;
 
@@ -18,13 +18,15 @@ public class Registration
 
     public uint? Housenumber { get; set; }
 
+    public string? DisplayHousenumber { get; set; }
+
     public string Phone { get; set; } = string.Empty;
 
     public string Mail { get; set; } = string.Empty;
 
     public uint TreeCount { get; set; } = 1;
 
-    public double Donation { get; set; } = 0.0;
+    public double Donation { get; set; } = 3.0;
 
     public string Comment { get; set; } = string.Empty;
 
@@ -35,6 +37,8 @@ public class Registration
     public string? UpdatedAt { get; set; }
 
     public string? CreatedAt { get; set; }
+
+    public bool ContinueToNew { get; set; } = false;
 
     public static Registration FromEntity(RegistrationEntity entity)
     {
@@ -50,8 +54,9 @@ public class Registration
             RegistrationDate = entity.RegistrationDate,
             Customer = entity.Customer,
             StreetId = entity.StreetId,
-            Street = $"{entity.Street.City} - {entity.Street.Name}",
+            Street = entity.Street.DisplayName,
             Housenumber = entity.Housenumber,
+            DisplayHousenumber = entity.DisplayHousenumber,
             Phone = entity.Phone ?? string.Empty,
             Mail = entity.Mail ?? string.Empty,
             TreeCount = entity.TreeCount,

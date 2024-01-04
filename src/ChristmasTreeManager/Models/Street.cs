@@ -1,24 +1,9 @@
-using ChristmasTreeManager.Data.Application;
+﻿using ChristmasTreeManager.Data.Application;
 
 namespace ChristmasTreeManager.Models;
 
 public class Street
 {
-    public string? DisplayName
-    {
-        get
-        {
-            var result = Name ?? string.Empty;
-
-            if (LowestHouseNumber > 1 || HighestHouseNumber < uint.MaxValue)
-                result = $"{result} {LowestHouseNumber}-{HighestHouseNumber}";
-            if (City is not null)
-                result = $"{result} | {City}";
-
-            return result;
-        }
-    }
-
     public string? Id { get; set; }
 
     public string? ZipCode { get; set; }
@@ -28,6 +13,7 @@ public class Street
     public string? District { get; set; }
 
     public string? Name { get; set; }
+    public string? DisplayName { get; set; }
 
     public uint LowestHouseNumber { get; set; } = 1;
 
@@ -62,6 +48,7 @@ public class Street
             City = entity.City,
             District = entity.District,
             Name = entity.Name,
+            DisplayName = entity.DisplayName,
             LowestHouseNumber = entity.LowestHouseNumber,
             HighestHouseNumber = entity.HighestHouseNumber,
             DistributionTourId = entity.DistributionTour?.Id.ToString(),

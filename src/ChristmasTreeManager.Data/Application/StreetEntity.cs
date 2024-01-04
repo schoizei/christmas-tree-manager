@@ -28,4 +28,23 @@ public class StreetEntity : AuditableEntity
     public uint CollectionTourOrderNumber { get; set; } = 0;
 
     public IList<RegistrationEntity> Registrations { get; set; } = [];
+
+    public string DisplayName
+    {
+        get
+        {
+            var result = Name ?? string.Empty;
+
+            if (LowestHouseNumber > 1 || HighestHouseNumber < uint.MaxValue)
+                result += $" {LowestHouseNumber}-";
+            if (LowestHouseNumber == 1 && HighestHouseNumber < uint.MaxValue)
+                result += $"{HighestHouseNumber}";
+            if (LowestHouseNumber > 1 && HighestHouseNumber == uint.MaxValue)
+                result += $"ꝏ";
+            if (City is not null)
+                result += $" | {City}";
+
+            return result;
+        }
+    }
 }
