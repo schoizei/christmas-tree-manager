@@ -36,10 +36,10 @@ builder.Services
             Console.WriteLine("[ApplicationDbContext] Use DatabaseProvider.Sqlite");
             options.UseSqlite(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Sqlite.Assembly));
         }
-        else if (databaseProvider == DatabaseProvider.MsSql.Name)
+        else if (databaseProvider == DatabaseProvider.MySql.Name)
         {
-            Console.WriteLine("[ApplicationDbContext] Use DatabaseProvider.MsSqls");
-            options.UseSqlServer(connectionString, x => x.MigrationsAssembly(DatabaseProvider.MsSql.Assembly));
+            Console.WriteLine("[ApplicationDbContext] Use DatabaseProvider.MySql");
+            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), x => x.MigrationsAssembly(DatabaseProvider.MySql.Assembly));
         }
         else if (databaseProvider == DatabaseProvider.Postgres.Name)
         {
@@ -68,10 +68,10 @@ builder.Services
             Console.WriteLine("[IdentityDbContext] Use DatabaseProvider.Sqlite");
             options.UseSqlite(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Sqlite.Assembly));
         }
-        else if (databaseProvider == DatabaseProvider.MsSql.Name)
+        else if (databaseProvider == DatabaseProvider.MySql.Name)
         {
-            Console.WriteLine("[IdentityDbContext] Use DatabaseProvider.MsSql");
-            options.UseSqlServer(connectionString, x => x.MigrationsAssembly(DatabaseProvider.MsSql.Assembly));
+            Console.WriteLine("[IdentityDbContext] Use DatabaseProvider.MySql");
+            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), x => x.MigrationsAssembly(DatabaseProvider.MySql.Assembly));
         }
         else if (databaseProvider == DatabaseProvider.Postgres.Name)
         {
