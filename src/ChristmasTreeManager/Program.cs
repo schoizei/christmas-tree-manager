@@ -1,4 +1,5 @@
 using ChristmasTreeManager.Components;
+using ChristmasTreeManager.Configuration;
 using ChristmasTreeManager.Infrastructure;
 using ChristmasTreeManager.Infrastructure.Identity;
 using ChristmasTreeManager.Services;
@@ -25,9 +26,23 @@ builder.Services
     .AddHttpClient("ChristmasTreeManager")
     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false }).AddHeaderPropagation(o => o.Headers.Add("Cookie")); ;
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services
+    .AddDbContext<ApplicationDbContext>(options =>
     {
-        options.UseSqlite(builder.Configuration.GetConnectionString("ApplicationConnection"));
+        var connectionString = builder.Configuration.GetConnectionString("Application");
+        var databaseProvider = builder.Configuration.GetValue(nameof(DatabaseProvider), DatabaseProvider.Sqlite.Name);
+        if (databaseProvider == DatabaseProvider.Sqlite.Name)
+        {
+            options.UseSqlite(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Sqlite.Assembly));
+        }
+        else if (databaseProvider == DatabaseProvider.Postgres.Name)
+        {
+            options.UseNpgsql(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Postgres.Assembly));
+        }
+        else
+        {
+            throw new Exception("No valid database provider found!");
+        }
     })
     .AddScoped<ApplicationDbService>();
 
@@ -39,7 +54,20 @@ builder.Services.AddAuthorization();
 builder.Services
     .AddDbContext<IdentityDbContext>(options =>
     {
-        options.UseSqlite(builder.Configuration.GetConnectionString("ApplicationConnection"));
+        var connectionString = builder.Configuration.GetConnectionString("Application");
+        var databaseProvider = builder.Configuration.GetValue(nameof(DatabaseProvider), DatabaseProvider.Sqlite.Name);
+        if (databaseProvider == DatabaseProvider.Sqlite.Name)
+        {
+            options.UseSqlite(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Sqlite.Assembly));
+        }
+        else if (databaseProvider == DatabaseProvider.Postgres.Name)
+        {
+            options.UseNpgsql(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Postgres.Assembly));
+        }
+        else
+        {
+            throw new Exception("No valid database provider found!");
+        }
     })
     .AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>()
     .AddScoped<SecurityService>()

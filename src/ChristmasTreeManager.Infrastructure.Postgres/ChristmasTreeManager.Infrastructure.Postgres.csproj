@@ -9,9 +9,10 @@
 		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <ProjectReference Include="..\ChristmasTreeManager.Data\ChristmasTreeManager.Data.csproj" />
+	  <ProjectReference Include="..\ChristmasTreeManager.Infrastructure\ChristmasTreeManager.Infrastructure.csproj" />
 	</ItemGroup>
 </Project>

@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ChristmasTreeManager.Infrastructure.Migrations.Identity
+namespace ChristmasTreeManager.Infrastructure.Sqlite.Migrations.Identity
 {
     [DbContext(typeof(IdentityDbContext))]
-    [Migration("20240103214745_Initial")]
+    [Migration("20240104124532_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

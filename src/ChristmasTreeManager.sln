@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChristmasTreeManager.Infras
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChristmasTreeManager", "ChristmasTreeManager\ChristmasTreeManager.csproj", "{B3FA6B8B-AC6C-494B-B7F1-7038A08CE772}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChristmasTreeManager.Infrastructure.Postgres", "ChristmasTreeManager.Infrastructure.Postgres\ChristmasTreeManager.Infrastructure.Postgres.csproj", "{D73D7F60-796A-49E6-BAA4-61B40D58BA83}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChristmasTreeManager.Infrastructure.Sqlite", "ChristmasTreeManager.Infrastructure.Sqlite\ChristmasTreeManager.Infrastructure.Sqlite.csproj", "{E115C774-0FE8-45A6-B96C-1E67F514466D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{B3FA6B8B-AC6C-494B-B7F1-7038A08CE772}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3FA6B8B-AC6C-494B-B7F1-7038A08CE772}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3FA6B8B-AC6C-494B-B7F1-7038A08CE772}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D73D7F60-796A-49E6-BAA4-61B40D58BA83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D73D7F60-796A-49E6-BAA4-61B40D58BA83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D73D7F60-796A-49E6-BAA4-61B40D58BA83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D73D7F60-796A-49E6-BAA4-61B40D58BA83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E115C774-0FE8-45A6-B96C-1E67F514466D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E115C774-0FE8-45A6-B96C-1E67F514466D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E115C774-0FE8-45A6-B96C-1E67F514466D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E115C774-0FE8-45A6-B96C-1E67F514466D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

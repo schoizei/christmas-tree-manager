@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace ChristmasTreeManager.Infrastructure.Migrations.Application
+namespace ChristmasTreeManager.Infrastructure.Sqlite.Migrations.Application
 {
     /// <inheritdoc />
     public partial class Initial : Migration
