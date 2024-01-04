@@ -29,7 +29,7 @@
     {
         try
         {
-            if (await DialogService.Confirm("Sind Sie sicher, dass Sie diese Sammlungstour löschen wollen?") == true)
+            if (await DialogService.Confirm("Sind Sie sicher, dass Sie diese Sammlungstour l&ouml;schen wollen?") == true)
             {
                 var deleteResult = await ApplicationDbService.DeleteCollectionTour(collectionTour.Id);
                 if (deleteResult != null)
@@ -40,7 +40,7 @@
         }
         catch (Exception ex)
         {
-            NotificationService.Notify(new NotificationMessage                {                    Severity = NotificationSeverity.Error,                    Summary = $"Error",                    Detail = $"Sammlungstour kann nicht gelöscht werden"                });
+            NotificationService.Notify(new NotificationMessage                {                    Severity = NotificationSeverity.Error,                    Summary = $"Error",                    Detail = $"Sammlungstour kann nicht gel&ouml;scht werden"                });
         }
     }
 

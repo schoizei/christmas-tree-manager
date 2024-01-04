@@ -29,7 +29,7 @@
     {
         try
         {
-            if (await DialogService.Confirm("Sind Sie sicher, dass Sie diese Anmeldestelle löschen wollen?") == true)
+            if (await DialogService.Confirm("Sind Sie sicher, dass Sie diese Anmeldestelle l&ouml;schen wollen?") == true)
             {
                 var deleteResult = await ApplicationDbService.DeleteRegistrationPoint(registrationPoint.Id);
                 if (deleteResult != null)
@@ -40,7 +40,7 @@
         }
         catch (Exception ex)
         {
-            NotificationService.Notify(new NotificationMessage                {                    Severity = NotificationSeverity.Error,                    Summary = $"Error",                    Detail = $"Anmeldestelle kann nicht gelöscht werden"                });
+            NotificationService.Notify(new NotificationMessage                {                    Severity = NotificationSeverity.Error,                    Summary = $"Error",                    Detail = $"Anmeldestelle kann nicht gel&ouml;scht werden"                });
         }
     }
 

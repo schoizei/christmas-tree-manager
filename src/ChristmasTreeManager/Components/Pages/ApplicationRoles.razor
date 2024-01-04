@@ -60,7 +60,7 @@
     {
         try
         {
-            if (await DialogService.Confirm("Sind Sie sicher, dass Sie diese Rolle löschen möchten?") == true)
+            if (await DialogService.Confirm("Sind Sie sicher, dass Sie diese Rolle l&ouml;schen m&ouml;chten?") == true)
             {
                 await Security.DeleteRole($"{role.Id}");
                 roles = await Security.GetRoles();

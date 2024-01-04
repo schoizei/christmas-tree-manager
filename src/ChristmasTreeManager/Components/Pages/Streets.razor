@@ -11,7 +11,7 @@
 
     protected async Task AddButtonClick(MouseEventArgs args)
     {
-        await DialogService.OpenAsync<AddStreet>("Neue Straße", null);
+        await DialogService.OpenAsync<AddStreet>("Neue Stra&szlig;e", null);
 
         streets = await ApplicationDbService.GetStreets(new Query { Expand = "CollectionTour,DistributionTour" });
         await grid0.Reload();
@@ -19,7 +19,7 @@
 
     protected async Task EditRow(DataGridRowMouseEventArgs<Street> args)
     {
-        await DialogService.OpenAsync<EditStreet>("Straße bearbeiten", new Dictionary<string, object> { { "Id", args.Data.Id } });
+        await DialogService.OpenAsync<EditStreet>("Stra&szlig;e bearbeiten", new Dictionary<string, object> { { "Id", args.Data.Id } });
 
         streets = await ApplicationDbService.GetStreets(new Query { Expand = "CollectionTour,DistributionTour" });
         await grid0.Reload();
@@ -29,7 +29,7 @@
     {
         try
         {
-            if (await DialogService.Confirm("Sind Sie sicher, dass Sie diese Straße löschen wollen?") == true)
+            if (await DialogService.Confirm("Sind Sie sicher, dass Sie diese Stra&szlig;e l&ouml;schen wollen?") == true)
             {
                 var deleteResult = await ApplicationDbService.DeleteStreet(street.Id);
                 if (deleteResult != null)
@@ -40,7 +40,7 @@
         }
         catch (Exception ex)
         {
-            NotificationService.Notify(new NotificationMessage                {                    Severity = NotificationSeverity.Error,                    Summary = $"Error",                    Detail = $"Straße kann nicht gelöscht werden"                });
+            NotificationService.Notify(new NotificationMessage                {                    Severity = NotificationSeverity.Error,                    Summary = $"Error",                    Detail = $"Stra&szlig;e kann nicht gel&ouml;scht werden"                });
         }
     }
 

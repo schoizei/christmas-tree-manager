@@ -15,7 +15,7 @@
             <RadzenAlert Shade="Radzen.Shade.Lighter" Variant="Radzen.Variant.Flat" Size="Radzen.AlertSize.Small" AlertStyle="Radzen.AlertStyle.Danger" Visible="@errorVisible">@error</RadzenAlert>
             <RadzenAlert Shade="Radzen.Shade.Lighter" Variant="Radzen.Variant.Flat" Size="Radzen.AlertSize.Small" AlertStyle="Radzen.AlertStyle.Info" Visible="@infoVisible">@info</RadzenAlert>
             <RadzenLogin AllowResetPassword="true" AllowRegister="true" ResetPassword="@ResetPassword" Register="@Register"
-                LoginText="Anmelden" RegisterText="Registrieren" PasswordText="Passwort" ResetPasswordText="Passwort zurücksetzen" UserText="E-Mail" RegisterMessageText="Sie sind noch nicht registriert?"/>
+                LoginText="Anmelden" RegisterText="Registrieren" PasswordText="Passwort" ResetPasswordText="Passwort zur&uuml;cksetzen" UserText="E-Mail" RegisterMessageText="Sie sind noch nicht registriert?"/>
         </RadzenTemplateForm>
     </RadzenColumn>
 </RadzenRow>
@@ -48,18 +48,18 @@
         if (result == true)
         {
             infoVisible = true;
-            info = "Anmeldung durchgeführt. Bitte prüfen Sie Ihre E-Mail für weitere Anweisungen.";
+            info = "Anmeldung durchgef&uuml;hrt. Bitte pr&uuml;fen Sie Ihre E-Mail f&uuml;r weitere Anweisungen.";
         }
     }
 
     protected async Task ResetPassword()
     {
-        var result = await DialogService.OpenAsync<ResetPassword>("Passwort zurücksetzen");
+        var result = await DialogService.OpenAsync<ResetPassword>("Passwort zur&uuml;cksetzen");
         if (result == true)
         {
             infoVisible = true;
 
-            info = "Passwort erfolgreich zurückgesetzt. Bitte prüfen Sie Ihre E-Mail für weitere Anweisungen.";
+            info = "Passwort erfolgreich zur&uuml;ckgesetzt. Bitte pr&uuml;fen Sie Ihre E-Mail f&uuml;r weitere Anweisungen.";
         }
     }
 }
