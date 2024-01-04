@@ -28,4 +28,25 @@ public partial class IdentityDbContext : IdentityDbContext<ApplicationUser, Appl
 
         this.OnModelBuilding(builder);
     }
+
+
+    public void SeedSupperUser()
+    {
+        var superUser = new ApplicationUser()
+        {
+            UserName = "SuperUser",
+            NormalizedUserName = "SUPERUSER",
+            Email = "SuperUser",
+            NormalizedEmail = "SUPERUSER",
+            EmailConfirmed = true,
+            LockoutEnabled = false
+        };
+        superUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(superUser, "15w@MvYdFY@n");
+
+        if (!Users.Any(x => x.UserName == superUser.UserName))
+        {
+            Users.Add(superUser);
+            SaveChanges();
+        }
+    }
 }

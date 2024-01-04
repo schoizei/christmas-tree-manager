@@ -33,10 +33,17 @@ builder.Services
         var databaseProvider = builder.Configuration.GetValue(nameof(DatabaseProvider), DatabaseProvider.Sqlite.Name);
         if (databaseProvider == DatabaseProvider.Sqlite.Name)
         {
+            Console.WriteLine("[ApplicationDbContext] Use DatabaseProvider.Sqlite");
             options.UseSqlite(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Sqlite.Assembly));
+        }
+        else if (databaseProvider == DatabaseProvider.MsSql.Name)
+        {
+            Console.WriteLine("[ApplicationDbContext] Use DatabaseProvider.MsSqls");
+            options.UseSqlServer(connectionString, x => x.MigrationsAssembly(DatabaseProvider.MsSql.Assembly));
         }
         else if (databaseProvider == DatabaseProvider.Postgres.Name)
         {
+            Console.WriteLine("[ApplicationDbContext] Use DatabaseProvider.Postgres");
             options.UseNpgsql(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Postgres.Assembly));
         }
         else
@@ -58,10 +65,17 @@ builder.Services
         var databaseProvider = builder.Configuration.GetValue(nameof(DatabaseProvider), DatabaseProvider.Sqlite.Name);
         if (databaseProvider == DatabaseProvider.Sqlite.Name)
         {
+            Console.WriteLine("[IdentityDbContext] Use DatabaseProvider.Sqlite");
             options.UseSqlite(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Sqlite.Assembly));
+        }
+        else if (databaseProvider == DatabaseProvider.MsSql.Name)
+        {
+            Console.WriteLine("[IdentityDbContext] Use DatabaseProvider.MsSql");
+            options.UseSqlServer(connectionString, x => x.MigrationsAssembly(DatabaseProvider.MsSql.Assembly));
         }
         else if (databaseProvider == DatabaseProvider.Postgres.Name)
         {
+            Console.WriteLine("[IdentityDbContext] Use DatabaseProvider.Postgres");
             options.UseNpgsql(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Postgres.Assembly));
         }
         else
@@ -114,8 +128,13 @@ app.UseAuthorization();
 app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
-using var scope = app.Services.CreateScope();
-scope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.Migrate();
-scope.ServiceProvider.GetRequiredService<IdentityDbContext>().Database.Migrate();
+try
+{
+    using var scope = app.Services.CreateScope();
+    scope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.Migrate();
+    scope.ServiceProvider.GetRequiredService<IdentityDbContext>().Database.Migrate();
+    scope.ServiceProvider.GetRequiredService<IdentityDbContext>().SeedSupperUser();
+}
+catch { }
 
 app.Run();

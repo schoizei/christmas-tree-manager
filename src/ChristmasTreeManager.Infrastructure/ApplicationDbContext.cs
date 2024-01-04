@@ -3,9 +3,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ChristmasTreeManager.Infrastructure;
 
-//dotnet ef migrations add Initial --context ApplicationDbContext --project../ChristmasTreeManager.Infrastructure --output-dir Migrations\Application
-//dotnet ef migrations add Initial --context IdentityDbContext --project../ChristmasTreeManager.Infrastructure --output-dir Migrations\Identity
-
 public partial class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext()
