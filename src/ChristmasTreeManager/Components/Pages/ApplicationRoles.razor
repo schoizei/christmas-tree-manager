@@ -22,7 +22,7 @@
     <RadzenRow>
         <RadzenColumn SizeMD="12">
             <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot delete role" Visible="@errorVisible">@error</RadzenAlert>
-            <RadzenDataGrid @ref="grid0" AllowFiltering="true" AllowPaging="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30}) AllowSorting="true" Data="@roles" TItem="ApplicationRole">
+                <RadzenDataGrid @ref="grid0" AllowFiltering="true" AllowPaging="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{10, 50, 100, 500}) PageSize=50 AllowSorting="true" Data="@roles" TItem="ApplicationRole">
                 <Columns>
                     <RadzenDataGridColumn TItem="ApplicationRole" Property="Name" Title="Name" />
                     <RadzenDataGridColumn TItem="ApplicationRole" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
