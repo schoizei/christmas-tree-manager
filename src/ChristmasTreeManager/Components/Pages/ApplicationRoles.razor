@@ -7,7 +7,6 @@
 @inject NotificationService NotificationService
 @attribute [Authorize]
 
-<PageTitle>Rolle</PageTitle>
 <RadzenStack>
     <RadzenRow AlignItems="AlignItems.Center">
         <RadzenColumn Size="12" SizeMD="6">
@@ -23,20 +22,21 @@
         <RadzenColumn SizeMD="12">
             <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot delete role" Visible="@errorVisible">@error</RadzenAlert>
                 <RadzenDataGrid @ref="grid0" AllowFiltering="true" AllowPaging="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{10, 50, 100, 500}) PageSize=50 AllowSorting="true" Data="@roles" TItem="ApplicationRole">
-                <Columns>
-                    <RadzenDataGridColumn TItem="ApplicationRole" Property="Name" Title="Name" />
-                    <RadzenDataGridColumn TItem="ApplicationRole" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
-                        <Template Context="role">
-                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small"
-                                Variant="Variant.Flat" Shade="Shade.Lighter" Click="@(() => DeleteClick(role))" @onclick:stopPropagation="true" />
-                        </Template>
-                    </RadzenDataGridColumn>
-                </Columns>
-            </RadzenDataGrid>
-        </RadzenColumn>
-    </RadzenRow>
-</RadzenStack>
- @code {
+                    <Columns>
+                        <RadzenDataGridColumn TItem="ApplicationRole" Property="Name" Title="Name" />
+                        <RadzenDataGridColumn TItem="ApplicationRole" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+                            <Template Context="role">
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small"
+                                              Variant="Variant.Flat" Shade="Shade.Lighter" Click="@(() => DeleteClick(role))" @onclick:stopPropagation="true" />
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenStack>
+
+@code {
     [Inject]
     protected SecurityService Security { get; set; } = null!;
 

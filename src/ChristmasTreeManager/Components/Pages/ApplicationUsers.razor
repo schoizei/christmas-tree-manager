@@ -9,7 +9,6 @@
 
 @attribute [Authorize]
 
-<PageTitle>Benutzer</PageTitle>
 <RadzenStack>
     <RadzenRow AlignItems="AlignItems.Center">
         <RadzenColumn Size="12" SizeMD="6">
@@ -25,24 +24,24 @@
         <RadzenColumn SizeMD="12">
             <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot delete user" Visible="@errorVisible">@error</RadzenAlert>
                 <RadzenDataGrid @ref="grid0" AllowFiltering="true" AllowPaging="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{10, 50, 100, 500}) PageSize=50 AllowSorting="true" Data="@users"
-                TItem="ApplicationUser" RowSelect="@RowSelect">
-                <Columns>
-                    <RadzenDataGridColumn TItem="ApplicationUser" Property="UserName" Title="User Name" />
-                    <RadzenDataGridColumn TItem="ApplicationUser" Property="Email" Title="Email" />
-                    <RadzenDataGridColumn TItem="ApplicationUser" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
-                        <Template Context="user">
-                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small"
-                                Variant="Variant.Flat" Shade="Shade.Lighter" Click="@(() => DeleteClick(user))" @onclick:stopPropagation="true" />
-                        </Template>
-                    </RadzenDataGridColumn>
-                </Columns>
-            </RadzenDataGrid>
-        </RadzenColumn>
-    </RadzenRow>
-</RadzenStack>
+                                TItem="ApplicationUser" RowSelect="@RowSelect">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="ApplicationUser" Property="UserName" Title="User Name" />
+                        <RadzenDataGridColumn TItem="ApplicationUser" Property="Email" Title="Email" />
+                        <RadzenDataGridColumn TItem="ApplicationUser" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+                            <Template Context="user">
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small"
+                                              Variant="Variant.Flat" Shade="Shade.Lighter" Click="@(() => DeleteClick(user))" @onclick:stopPropagation="true" />
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenStack>
 
 
-@code {
+    @code {
     [Inject]
     protected SecurityService Security { get; set; } = null!;
 
@@ -66,7 +65,7 @@
 
     protected async Task RowSelect(ApplicationUser user)
     {
-        await DialogService.OpenAsync<EditApplicationUser>("Benutzer bearbeiten", new Dictionary<string, object>{ {"Id", user.Id} });
+        await DialogService.OpenAsync<EditApplicationUser>("Benutzer bearbeiten", new Dictionary<string, object> { { "Id", user.Id } });
         users = await Security.GetUsers();
     }
 
