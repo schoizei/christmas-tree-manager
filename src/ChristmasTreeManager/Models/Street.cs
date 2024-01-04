@@ -11,9 +11,11 @@ public class Street
             var result = Name ?? string.Empty;
 
             if (LowestHouseNumber > 1 || HighestHouseNumber < uint.MaxValue)
-                result += $" {LowestHouseNumber}-{HighestHouseNumber}";
+                result = $"{result} {LowestHouseNumber}-{HighestHouseNumber}";
+            if (City is not null)
+                result = $"{result} | {City}";
 
-            return result += $" | {City}";
+            return result;
         }
     }
 
