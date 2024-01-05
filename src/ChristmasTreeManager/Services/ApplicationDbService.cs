@@ -1,3 +1,4 @@
+using ChristmasTreeManager.Data.Application;
 using ChristmasTreeManager.Infrastructure;
 using ChristmasTreeManager.Models;
 using Microsoft.AspNetCore.Components;
@@ -69,6 +70,11 @@ public class ApplicationDbService
     public async Task ExportRegistrationsToCSV(Query? query = null, string? fileName = null)
     {
         _navigationManager.NavigateTo(query is not null ? query.ToUrl($"export/registrations/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')") : $"export/registrations/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')", true);
+    }
+
+    public IQueryable<RegistrationEntity> GetRegistrationEntities()
+    {
+        return _context.Registrations.AsQueryable();
     }
 
     public async Task<IQueryable<Registration>> GetRegistrations(Query? query = null)
