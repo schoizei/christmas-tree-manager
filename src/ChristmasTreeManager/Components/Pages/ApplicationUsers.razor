@@ -23,7 +23,7 @@
     <RadzenRow>
         <RadzenColumn SizeMD="12">
             <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot delete user" Visible="@errorVisible">@error</RadzenAlert>
-                <RadzenDataGrid @ref="grid0" AllowFiltering="true" AllowPaging="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{10, 50, 100, 500}) PageSize=50 AllowSorting="true" Data="@users"
+                <RadzenDataGrid @ref="dataGrid" AllowFiltering="true" AllowPaging="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{10, 50, 100, 500}) PageSize=50 AllowSorting="true" Data="@data"
                                 TItem="ApplicationUser" RowSelect="@RowSelect">
                     <Columns>
                         <RadzenDataGridColumn TItem="ApplicationUser" Property="UserName" Title="User Name" />
@@ -47,26 +47,27 @@
 
     protected string error = string.Empty;
     protected bool errorVisible;
-    protected IEnumerable<ApplicationUser> users = null!;
-    protected RadzenDataGrid<ApplicationUser> grid0 = null!;
+    protected IEnumerable<ApplicationUser> data = null!;
+    protected RadzenDataGrid<ApplicationUser> dataGrid = null!;
 
 
     protected override async Task OnInitializedAsync()
     {
-        users = await Security.GetUsers();
+        await base.OnInitializedAsync();
+
+        data = await Security.GetUsers();
     }
 
     protected async Task AddClick()
     {
         await DialogService.OpenAsync<AddApplicationUser>("Neuer Benutzer");
-
-        users = await Security.GetUsers();
+        await dataGrid.Reload();
     }
 
     protected async Task RowSelect(ApplicationUser user)
     {
         await DialogService.OpenAsync<EditApplicationUser>("Benutzer bearbeiten", new Dictionary<string, object> { { "Id", user.Id } });
-        users = await Security.GetUsers();
+        await dataGrid.Reload();
     }
 
     protected async Task DeleteClick(ApplicationUser user)
@@ -76,8 +77,7 @@
             if (await DialogService.Confirm("Sind Sie sicher, dass Sie diesen Benutzer l&ouml;schen m&ouml;chten?") == true)
             {
                 await Security.DeleteUser($"{user.Id}");
-
-                users = await Security.GetUsers();
+                await dataGrid.Reload();
             }
         }
         catch (Exception ex)

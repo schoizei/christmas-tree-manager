@@ -21,7 +21,7 @@
     <RadzenRow>
         <RadzenColumn SizeMD="12">
             <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot delete role" Visible="@errorVisible">@error</RadzenAlert>
-                <RadzenDataGrid @ref="grid0" AllowFiltering="true" AllowPaging="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{10, 50, 100, 500}) PageSize=50 AllowSorting="true" Data="@roles" TItem="ApplicationRole">
+                <RadzenDataGrid @ref="dataGrid" AllowFiltering="true" AllowPaging="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{10, 50, 100, 500}) PageSize=50 AllowSorting="true" Data="@data" TItem="ApplicationRole">
                     <Columns>
                         <RadzenDataGridColumn TItem="ApplicationRole" Property="Name" Title="Name" />
                         <RadzenDataGridColumn TItem="ApplicationRole" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
@@ -36,24 +36,25 @@
         </RadzenRow>
     </RadzenStack>
 
-@code {
+    @code {
     [Inject]
     protected SecurityService Security { get; set; } = null!;
 
     protected string error = string.Empty;
     protected bool errorVisible;
-    protected IEnumerable<ApplicationRole> roles = null!;
-    protected RadzenDataGrid<ApplicationRole> grid0 = null!;
+    protected IEnumerable<ApplicationRole> data = null!;
+    protected RadzenDataGrid<ApplicationRole> dataGrid = null!;
 
     protected override async Task OnInitializedAsync()
     {
-        roles = await Security.GetRoles();
+        await base.OnInitializedAsync();
+        data = await Security.GetRoles();
     }
 
     protected async Task AddClick()
     {
         await DialogService.OpenAsync<AddApplicationRole>("Neue Rolle");
-        roles = await Security.GetRoles();
+        await dataGrid.Reload();
     }
 
     protected async Task DeleteClick(ApplicationRole role)
@@ -63,7 +64,6 @@
             if (await DialogService.Confirm("Sind Sie sicher, dass Sie diese Rolle l&ouml;schen m&ouml;chten?") == true)
             {
                 await Security.DeleteRole($"{role.Id}");
-                roles = await Security.GetRoles();
             }
         }
         catch (Exception ex)

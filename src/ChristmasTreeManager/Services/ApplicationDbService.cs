@@ -79,9 +79,7 @@ public class ApplicationDbService
 
     public async Task<IQueryable<Registration>> GetRegistrations(Query? query = null)
     {
-        var items = _context.Registrations.AsQueryable();
-        items = items.Include(i => i.Street);
-        items = items.Include(i => i.RegistrationPoint);
+        var items = GetRegistrationEntities();
 
         if (query is not null)
         {
@@ -97,10 +95,7 @@ public class ApplicationDbService
             ApplyQuery(ref items, query);
         }
 
-        var result = items.ToList()
-            .Select(Registration.FromEntity)
-            .AsQueryable();
-        return await Task.FromResult(result);
+        return await Task.FromResult(items.Select(Registration.FromEntity).AsQueryable());
     }
 
     public async Task<Registration?> GetRegistrationById(string id)
@@ -108,8 +103,8 @@ public class ApplicationDbService
         var items = _context.Registrations
             .Include(i => i.Street)
             .Include(i => i.RegistrationPoint)
-            .AsNoTracking()
-            .Where(i => i.Id == id);
+            .Where(i => i.Id == id)
+            .AsNoTracking();
 
         var itemToReturn = items.FirstOrDefault();
         if (itemToReturn is null) return null;
@@ -172,8 +167,8 @@ public class ApplicationDbService
     public async Task<Registration> DeleteRegistration(string id)
     {
         var itemToDelete = _context.Registrations
-            .Where(i => i.Id == id)
-            .FirstOrDefault();
+            .FirstOrDefault(i => i.Id == id);
+
         if (itemToDelete is null)
         {
             throw new Exception("Item no longer available");
@@ -204,9 +199,15 @@ public class ApplicationDbService
         _navigationManager.NavigateTo(query is not null ? query.ToUrl($"export/collectiontours/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')") : $"export/collectiontours/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')", true);
     }
 
+    public IQueryable<CollectionTourEntity> GetCollectionTourEntities()
+    {
+        return _context.CollectionTours.AsQueryable();
+    }
+
     public async Task<IQueryable<CollectionTour>> GetCollectionTours(Query? query = null)
     {
-        var items = _context.CollectionTours.AsQueryable();
+        var items = GetCollectionTourEntities();
+
         if (query is not null)
         {
             if (!string.IsNullOrEmpty(query.Expand))
@@ -221,17 +222,14 @@ public class ApplicationDbService
             ApplyQuery(ref items, query);
         }
 
-        var result = items.ToList()
-            .Select(CollectionTour.FromEntity)
-            .AsQueryable();
-        return await Task.FromResult(result);
+        return await Task.FromResult(items.Select(CollectionTour.FromEntity).AsQueryable());
     }
 
     public async Task<CollectionTour?> GetCollectionTourById(string id)
     {
         var items = _context.CollectionTours
-            .AsNoTracking()
-            .Where(i => i.Id == id);
+            .Where(i => i.Id == id)
+            .AsNoTracking();
 
         var itemToReturn = items.FirstOrDefault();
         if (itemToReturn is null) return null;
@@ -263,9 +261,7 @@ public class ApplicationDbService
 
     public async Task<CollectionTour> UpdateCollectionTour(string user, string id, CollectionTour collectionTour)
     {
-        var itemToUpdate = _context.CollectionTours
-            .Where(i => i.Id == id)
-            .FirstOrDefault();
+        var itemToUpdate = _context.CollectionTours.FirstOrDefault(i => i.Id == id);
         if (itemToUpdate is null)
         {
             throw new Exception("Item no longer available");
@@ -286,9 +282,7 @@ public class ApplicationDbService
 
     public async Task<CollectionTour> DeleteCollectionTour(string id)
     {
-        var itemToDelete = _context.CollectionTours
-            .Where(i => i.Id == id)
-            .FirstOrDefault();
+        var itemToDelete = _context.CollectionTours.FirstOrDefault(i => i.Id == id);
         if (itemToDelete is null)
         {
             throw new Exception("Item no longer available");
@@ -318,9 +312,15 @@ public class ApplicationDbService
         _navigationManager.NavigateTo(query is not null ? query.ToUrl($"export/distributiontours/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')") : $"export/distributiontours/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')", true);
     }
 
+    public IQueryable<DistributionTourEntity> GetDistributionTourEntities()
+    {
+        return _context.DistributionTours.AsQueryable();
+    }
+
     public async Task<IQueryable<DistributionTour>> GetDistributionTours(Query? query = null)
     {
-        var items = _context.DistributionTours.AsQueryable();
+        var items = GetDistributionTourEntities();
+
         if (query is not null)
         {
             if (!string.IsNullOrEmpty(query.Expand))
@@ -335,18 +335,15 @@ public class ApplicationDbService
             ApplyQuery(ref items, query);
         }
 
-        var result = items.ToList()
-            .Select(DistributionTour.FromEntity)
-            .AsQueryable();
-        return await Task.FromResult(result);
+        return await Task.FromResult(items.Select(DistributionTour.FromEntity).AsQueryable());
     }
 
 
     public async Task<DistributionTour?> GetDistributionTourById(string id)
     {
         var items = _context.DistributionTours
-            .AsNoTracking()
-            .Where(i => i.Id == id);
+            .Where(i => i.Id == id)
+            .AsNoTracking();
 
         var itemToReturn = items.FirstOrDefault();
         if (itemToReturn is null) return null;
@@ -378,9 +375,7 @@ public class ApplicationDbService
 
     public async Task<DistributionTour> UpdateDistributionTour(string user, string id, DistributionTour distributionTour)
     {
-        var itemToUpdate = _context.DistributionTours
-            .Where(i => i.Id == id)
-            .FirstOrDefault();
+        var itemToUpdate = _context.DistributionTours.FirstOrDefault(i => i.Id == id);
         if (itemToUpdate is null)
         {
             throw new Exception("Item no longer available");
@@ -399,9 +394,7 @@ public class ApplicationDbService
 
     public async Task<DistributionTour> DeleteDistributionTour(string id)
     {
-        var itemToDelete = _context.DistributionTours
-            .Where(i => i.Id == id)
-            .FirstOrDefault();
+        var itemToDelete = _context.DistributionTours.FirstOrDefault(i => i.Id == id);
         if (itemToDelete is null)
         {
             throw new Exception("Item no longer available");
@@ -431,10 +424,15 @@ public class ApplicationDbService
         _navigationManager.NavigateTo(query is not null ? query.ToUrl($"export/registrationpoints/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')") : $"export/registrationpoints/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')", true);
     }
 
+    public IQueryable<RegistrationPointEntity> GetRegistrationPointEntities()
+    {
+        return _context.RegistrationPoints.AsQueryable();
+    }
 
     public async Task<IQueryable<RegistrationPoint>> GetRegistrationPoints(Query? query = null)
     {
-        var items = _context.RegistrationPoints.AsQueryable();
+        var items = GetRegistrationPointEntities();
+
         if (query is not null)
         {
             if (!string.IsNullOrEmpty(query.Expand))
@@ -449,18 +447,15 @@ public class ApplicationDbService
             ApplyQuery(ref items, query);
         }
 
-        var result = items.ToList()
-            .Select(RegistrationPoint.FromEntity)
-            .AsQueryable();
-        return await Task.FromResult(result);
+        return await Task.FromResult(items.Select(RegistrationPoint.FromEntity).AsQueryable());
     }
 
 
     public async Task<RegistrationPoint?> GetRegistrationPointById(string id)
     {
         var items = _context.RegistrationPoints
-            .AsNoTracking()
-            .Where(i => i.Id == id);
+            .Where(i => i.Id == id)
+            .AsNoTracking();
 
         var itemToReturn = items.FirstOrDefault();
         if (itemToReturn is null) return null;
@@ -513,9 +508,7 @@ public class ApplicationDbService
 
     public async Task<RegistrationPoint> DeleteRegistrationPoint(string id)
     {
-        var itemToDelete = _context.RegistrationPoints
-            .Where(i => i.Id == id)
-            .FirstOrDefault();
+        var itemToDelete = _context.RegistrationPoints.FirstOrDefault(i => i.Id == id);
         if (itemToDelete is null)
         {
             throw new Exception("Item no longer available");
@@ -545,12 +538,14 @@ public class ApplicationDbService
         _navigationManager.NavigateTo(query is not null ? query.ToUrl($"export/streets/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')") : $"export/streets/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')", true);
     }
 
+    public IQueryable<StreetEntity> GetStreetEntities()
+    {
+        return _context.Streets.AsQueryable();
+    }
 
     public async Task<IQueryable<Street>> GetStreets(Query? query = null)
     {
-        var items = _context.Streets.AsQueryable();
-        items = items.Include(i => i.CollectionTour);
-        items = items.Include(i => i.DistributionTour);
+        var items = GetStreetEntities();
 
         if (query is not null)
         {
@@ -566,20 +561,17 @@ public class ApplicationDbService
             ApplyQuery(ref items, query);
         }
 
-        var result = items.ToList()
-            .Select(Street.FromEntity)
-            .AsQueryable();
-        return await Task.FromResult(result);
+        return await Task.FromResult(items.Select(Street.FromEntity).AsQueryable());
     }
 
     public async Task<Street?> GetStreetById(string id)
     {
         var items = _context.Streets
-            .AsNoTracking()
             .Include(i => i.DistributionTour)
             .Include(i => i.CollectionTour)
             .Include(i => i.Registrations)
-            .Where(i => i.Id == id);
+            .Where(i => i.Id == id)
+            .AsNoTracking();
 
         var itemToReturn = items.FirstOrDefault();
         if (itemToReturn is null) return null;
@@ -611,9 +603,7 @@ public class ApplicationDbService
 
     public async Task<Street> UpdateStreet(string user, string id, Street street)
     {
-        var itemToUpdate = _context.Streets
-            .Where(i => i.Id == id)
-            .FirstOrDefault();
+        var itemToUpdate = _context.Streets.FirstOrDefault(i => i.Id == id);
         if (itemToUpdate is null)
         {
             throw new Exception("Item no longer available");
@@ -640,9 +630,7 @@ public class ApplicationDbService
 
     public async Task<Street> DeleteStreet(string id)
     {
-        var itemToDelete = _context.Streets
-            .Where(i => i.Id == id)
-            .FirstOrDefault();
+        var itemToDelete = _context.Streets.FirstOrDefault(i => i.Id == id);
         if (itemToDelete is null)
         {
             throw new Exception("Item no longer available");

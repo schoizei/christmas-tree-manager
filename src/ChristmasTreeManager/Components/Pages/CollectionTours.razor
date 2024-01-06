@@ -1,28 +1,25 @@
-@page "/collection-tours"@attribute [Authorize]@inject IJSRuntime JSRuntime@inject NavigationManager NavigationManager@inject DialogService DialogService@inject ContextMenuService ContextMenuService@inject TooltipService TooltipService@inject NotificationService NotificationService@inject ApplicationDbService ApplicationDbService<RadzenStack>    <RadzenRow AlignItems="AlignItems.Center">        <RadzenColumn Size="12" SizeMD="6">            <RadzenText Text="Sammlungstouren" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />        </RadzenColumn>        <RadzenColumn Size="12" SizeMD="6">            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">                <RadzenSplitButton Icon="get_app" Text="Export" Click="@ExportClick" Variant="Variant.Flat" Shade="Shade.Lighter">                    <RadzenSplitButtonItem Text="Excel" Value="xlsx" />                    <RadzenSplitButtonItem Text="CSV" Value="csv" />                </RadzenSplitButton>                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddButtonClick" Variant="Variant.Flat" />            </RadzenStack>        </RadzenColumn>    </RadzenRow>    <RadzenRow>        <RadzenColumn SizeMD=12>            <RadzenDataGrid @ref="grid0" ColumnWidth="200px" AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PPageSizeOptions=@(new int[]{10, 50, 100, 500}) PageSize=50 Data="@collectionTours" TItem="CollectionTour" RowDoubleClick="@EditRow">                <Columns>                    <RadzenDataGridColumn TItem="CollectionTour" Property="Name" Title="Name">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="CollectionTour" Property="Vehicle" Title="Fahrzeug">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="CollectionTour" Property="Driver" Title="Fahrer">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="CollectionTour" Property="Staff" Title="Mitarbeiter">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="CollectionTour" Property="CreatedAt" Title="Erstelldatum">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="CollectionTour" Property="CreatedBy" Title="Ersteller">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="CollectionTour" Property="UpdatedAt" Title="&Auml;nderungsdatum">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="CollectionTour" Property="UpdatedBy" Title="Bearbeiter">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="CollectionTour" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">                        <Template Context="collectionTour">                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium" Shade="Shade.Lighter" Variant="Variant.Flat" Click=@(args => GridDeleteButtonClick(args, collectionTour)) @onclick:stopPropagation="true" />                        </Template>                    </RadzenDataGridColumn>                </Columns>            </RadzenDataGrid>        </RadzenColumn>    </RadzenRow></RadzenStack>@code {    [Inject]
+@page "/collection-tours"@attribute [Authorize]@inject IJSRuntime JSRuntime@inject NavigationManager NavigationManager@inject DialogService DialogService@inject ContextMenuService ContextMenuService@inject TooltipService TooltipService@inject NotificationService NotificationService@inject ApplicationDbService ApplicationDbService<RadzenStack>    <RadzenRow AlignItems="AlignItems.Center">        <RadzenColumn Size="12" SizeMD="6">            <RadzenText Text="Sammlungstouren" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />        </RadzenColumn>        <RadzenColumn Size="12" SizeMD="6">            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">                <RadzenSplitButton Icon="get_app" Text="Export" Click="@ExportClick" Variant="Variant.Flat" Shade="Shade.Lighter">                    <RadzenSplitButtonItem Text="Excel" Value="xlsx" />                    <RadzenSplitButtonItem Text="CSV" Value="csv" />                </RadzenSplitButton>                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddButtonClick" Variant="Variant.Flat" />            </RadzenStack>        </RadzenColumn>    </RadzenRow>    <RadzenRow>        <RadzenColumn SizeMD=12>            <RadzenDataGrid @ref="dataGrid" ColumnWidth="200px" AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PPageSizeOptions=@(new int[]{10, 50, 100, 500}) PageSize=50 Data="@data" TItem="CollectionTour" RowDoubleClick="@EditRow">                <Columns>                    <RadzenDataGridColumn TItem="CollectionTour" Property="Name" Title="Name">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="CollectionTour" Property="Vehicle" Title="Fahrzeug">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="CollectionTour" Property="Driver" Title="Fahrer">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="CollectionTour" Property="Staff" Title="Mitarbeiter">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="CollectionTour" Property="CreatedAt" Title="Erstelldatum">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="CollectionTour" Property="CreatedBy" Title="Ersteller">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="CollectionTour" Property="UpdatedAt" Title="&Auml;nderungsdatum">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="CollectionTour" Property="UpdatedBy" Title="Bearbeiter">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="CollectionTour" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">                        <Template Context="collectionTour">                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium" Shade="Shade.Lighter" Variant="Variant.Flat" Click=@(args => GridDeleteButtonClick(args, collectionTour)) @onclick:stopPropagation="true" />                        </Template>                    </RadzenDataGridColumn>                </Columns>            </RadzenDataGrid>        </RadzenColumn>    </RadzenRow></RadzenStack>@code {    [Inject]
     protected SecurityService Security { get; set; } = null!;
 
-    protected IEnumerable<CollectionTour> collectionTours = null!;
-    protected RadzenDataGrid<CollectionTour> grid0 = null!;
+    protected IEnumerable<CollectionTour> data = null!;
+    protected RadzenDataGrid<CollectionTour> dataGrid = null!;
 
     protected override async Task OnInitializedAsync()
     {
-        collectionTours = await ApplicationDbService.GetCollectionTours();
+        await base.OnInitializedAsync();
+        data = await ApplicationDbService.GetCollectionTours(new Query { Expand = "Streets" });
     }
 
     protected async Task AddButtonClick(MouseEventArgs args)
     {
         await DialogService.OpenAsync<AddCollectionTour>("Neue Sammlungstour", null);
-
-        collectionTours = await ApplicationDbService.GetCollectionTours();
-        await grid0.Reload();
+        await dataGrid.Reload();
     }
 
     protected async Task EditRow(DataGridRowMouseEventArgs<CollectionTour> args)
     {
-        await DialogService.OpenAsync<EditCollectionTour>("Sammlungstour bearbeiten", new Dictionary<string, object> { { "Id", args.Data.Id } });
-
-        collectionTours = await ApplicationDbService.GetCollectionTours();
-        await grid0.Reload();
+        await DialogService.OpenAsync<EditCollectionTour>("Sammlungstour bearbeiten", new Dictionary<string, object> { { "Id", args.Data.Id! } });
+        await dataGrid.Reload();
     }
 
     protected async Task GridDeleteButtonClick(MouseEventArgs args, CollectionTour collectionTour)
@@ -31,10 +28,10 @@
         {
             if (await DialogService.Confirm("Sind Sie sicher, dass Sie diese Sammlungstour l&ouml;schen wollen?") == true)
             {
-                var deleteResult = await ApplicationDbService.DeleteCollectionTour(collectionTour.Id);
+                var deleteResult = await ApplicationDbService.DeleteCollectionTour(collectionTour.Id!);
                 if (deleteResult != null)
                 {
-                    await grid0.Reload();
+                    await dataGrid.Reload();
                 }
             }
         }
@@ -48,11 +45,11 @@
     {
         if (args?.Value == "csv")
         {
-            await ApplicationDbService.ExportCollectionToursToCSV(new Query                {                    Filter = $@"{(string.IsNullOrEmpty(grid0.Query.Filter) ? "true" : grid0.Query.Filter)}",                    OrderBy = $"{grid0.Query.OrderBy}",                    Expand = "",                    Select = string.Join(",", grid0.ColumnsCollection.Where(c => c.GetVisible() && !string.IsNullOrEmpty(c.Property)).Select(c => c.Property.Contains(".") ? c.Property + " as " + c.Property.Replace(".", "") : c.Property))                }, "CollectionTours");
+            await ApplicationDbService.ExportCollectionToursToCSV(new Query                {                    Filter = $@"{(string.IsNullOrEmpty(dataGrid.Query.Filter) ? "true" : dataGrid.Query.Filter)}",                    OrderBy = $"{dataGrid.Query.OrderBy}",                    Expand = "",                    Select = string.Join(",", dataGrid.ColumnsCollection.Where(c => c.GetVisible() && !string.IsNullOrEmpty(c.Property)).Select(c => c.Property.Contains(".") ? c.Property + " as " + c.Property.Replace(".", "") : c.Property))                }, "CollectionTours");
         }
 
         if (args == null || args.Value == "xlsx")
         {
-            await ApplicationDbService.ExportCollectionToursToExcel(new Query                {                    Filter = $@"{(string.IsNullOrEmpty(grid0.Query.Filter) ? "true" : grid0.Query.Filter)}",                    OrderBy = $"{grid0.Query.OrderBy}",                    Expand = "",                    Select = string.Join(",", grid0.ColumnsCollection.Where(c => c.GetVisible() && !string.IsNullOrEmpty(c.Property)).Select(c => c.Property.Contains(".") ? c.Property + " as " + c.Property.Replace(".", "") : c.Property))                }, "CollectionTours");
+            await ApplicationDbService.ExportCollectionToursToExcel(new Query                {                    Filter = $@"{(string.IsNullOrEmpty(dataGrid.Query.Filter) ? "true" : dataGrid.Query.Filter)}",                    OrderBy = $"{dataGrid.Query.OrderBy}",                    Expand = "",                    Select = string.Join(",", dataGrid.ColumnsCollection.Where(c => c.GetVisible() && !string.IsNullOrEmpty(c.Property)).Select(c => c.Property.Contains(".") ? c.Property + " as " + c.Property.Replace(".", "") : c.Property))                }, "CollectionTours");
         }
     }}

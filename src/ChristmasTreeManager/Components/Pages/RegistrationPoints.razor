@@ -1,28 +1,24 @@
-@page "/registration-points"@attribute [Authorize]@inject IJSRuntime JSRuntime@inject NavigationManager NavigationManager@inject DialogService DialogService@inject ContextMenuService ContextMenuService@inject TooltipService TooltipService@inject NotificationService NotificationService@inject ApplicationDbService ApplicationDbService<RadzenStack>    <RadzenRow AlignItems="AlignItems.Center">        <RadzenColumn Size="12" SizeMD="6">            <RadzenText Text="Annahmestellen" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />        </RadzenColumn>        <RadzenColumn Size="12" SizeMD="6">            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">                <RadzenSplitButton Icon="get_app" Text="Export" Click="@ExportClick" Variant="Variant.Flat" Shade="Shade.Lighter">                    <RadzenSplitButtonItem Text="Excel" Value="xlsx" />                    <RadzenSplitButtonItem Text="CSV" Value="csv" />                </RadzenSplitButton>                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddButtonClick" Variant="Variant.Flat" />            </RadzenStack>        </RadzenColumn>    </RadzenRow>    <RadzenRow>        <RadzenColumn SizeMD=12>            <RadzenDataGrid @ref="grid0" ColumnWidth="200px" AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{10, 50, 100, 500}) PageSize=50 Data="@registrationPoints" TItem="RegistrationPoint" RowDoubleClick="@EditRow">                <Columns>                    <RadzenDataGridColumn TItem="RegistrationPoint" Property="Name" Title="Name">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="RegistrationPoint" Property="Address" Title="Address">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="RegistrationPoint" Property="CreatedAt" Title="Erstelldatum">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="RegistrationPoint" Property="CreatedBy" Title="Ersteller">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="RegistrationPoint" Property="UpdatedAt" Title="&Auml;nderungsdatum">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="RegistrationPoint" Property="UpdatedBy" Title="Bearbeiter">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="RegistrationPoint" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">                        <Template Context="registrationPoint">                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium" Shade="Shade.Lighter" Variant="Variant.Flat" Click=@(args => GridDeleteButtonClick(args, registrationPoint)) @onclick:stopPropagation="true" />                        </Template>                    </RadzenDataGridColumn>                </Columns>            </RadzenDataGrid>        </RadzenColumn>    </RadzenRow></RadzenStack>@code {    [Inject]
+@page "/registration-points"@attribute [Authorize]@inject IJSRuntime JSRuntime@inject NavigationManager NavigationManager@inject DialogService DialogService@inject ContextMenuService ContextMenuService@inject TooltipService TooltipService@inject NotificationService NotificationService@inject ApplicationDbService ApplicationDbService<RadzenStack>    <RadzenRow AlignItems="AlignItems.Center">        <RadzenColumn Size="12" SizeMD="6">            <RadzenText Text="Annahmestellen" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />        </RadzenColumn>        <RadzenColumn Size="12" SizeMD="6">            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">                <RadzenSplitButton Icon="get_app" Text="Export" Click="@ExportClick" Variant="Variant.Flat" Shade="Shade.Lighter">                    <RadzenSplitButtonItem Text="Excel" Value="xlsx" />                    <RadzenSplitButtonItem Text="CSV" Value="csv" />                </RadzenSplitButton>                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddButtonClick" Variant="Variant.Flat" />            </RadzenStack>        </RadzenColumn>    </RadzenRow>    <RadzenRow>        <RadzenColumn SizeMD=12>            <RadzenDataGrid @ref="dataGrid" ColumnWidth="200px" AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{10, 50, 100, 500}) PageSize=50 Data="@data" TItem="RegistrationPoint" RowDoubleClick="@EditRow">                <Columns>                    <RadzenDataGridColumn TItem="RegistrationPoint" Property="Name" Title="Name">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="RegistrationPoint" Property="Address" Title="Address">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="RegistrationPoint" Property="CreatedAt" Title="Erstelldatum">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="RegistrationPoint" Property="CreatedBy" Title="Ersteller">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="RegistrationPoint" Property="UpdatedAt" Title="&Auml;nderungsdatum">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="RegistrationPoint" Property="UpdatedBy" Title="Bearbeiter">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="RegistrationPoint" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">                        <Template Context="registrationPoint">                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium" Shade="Shade.Lighter" Variant="Variant.Flat" Click=@(args => GridDeleteButtonClick(args, registrationPoint)) @onclick:stopPropagation="true" />                        </Template>                    </RadzenDataGridColumn>                </Columns>            </RadzenDataGrid>        </RadzenColumn>    </RadzenRow></RadzenStack>@code {    [Inject]
     protected SecurityService Security { get; set; } = null!;
 
-    protected IEnumerable<RegistrationPoint> registrationPoints = null!;
-    protected RadzenDataGrid<RegistrationPoint> grid0 = null!;
+    protected IEnumerable<RegistrationPoint> data = null!;
+    protected RadzenDataGrid<RegistrationPoint> dataGrid = null!;
 
     protected override async Task OnInitializedAsync()
     {
-        registrationPoints = await ApplicationDbService.GetRegistrationPoints();
+        data = await ApplicationDbService.GetRegistrationPoints(new Query { Expand = "Registrations" });
     }
 
     protected async Task AddButtonClick(MouseEventArgs args)
     {
         await DialogService.OpenAsync<AddRegistrationPoint>("Neue Anmeldestelle", null);
-
-        registrationPoints = await ApplicationDbService.GetRegistrationPoints();
-        await grid0.Reload();
+        await dataGrid.Reload();
     }
 
     protected async Task EditRow(DataGridRowMouseEventArgs<RegistrationPoint> args)
     {
-        await DialogService.OpenAsync<EditRegistrationPoint>("Anmeldestelle bearbeiten", new Dictionary<string, object> { { "Id", args.Data.Id } });
-
-        registrationPoints = await ApplicationDbService.GetRegistrationPoints();
-        await grid0.Reload();
+        await DialogService.OpenAsync<EditRegistrationPoint>("Anmeldestelle bearbeiten", new Dictionary<string, object> { { "Id", args.Data.Id! } });
+        await dataGrid.Reload();
     }
 
     protected async Task GridDeleteButtonClick(MouseEventArgs args, RegistrationPoint registrationPoint)
@@ -31,10 +27,10 @@
         {
             if (await DialogService.Confirm("Sind Sie sicher, dass Sie diese Anmeldestelle l&ouml;schen wollen?") == true)
             {
-                var deleteResult = await ApplicationDbService.DeleteRegistrationPoint(registrationPoint.Id);
+                var deleteResult = await ApplicationDbService.DeleteRegistrationPoint(registrationPoint.Id!);
                 if (deleteResult != null)
                 {
-                    await grid0.Reload();
+                    await dataGrid.Reload();
                 }
             }
         }
@@ -48,11 +44,11 @@
     {
         if (args?.Value == "csv")
         {
-            await ApplicationDbService.ExportRegistrationPointsToCSV(new Query                {                    Filter = $@"{(string.IsNullOrEmpty(grid0.Query.Filter) ? "true" : grid0.Query.Filter)}",                    OrderBy = $"{grid0.Query.OrderBy}",                    Expand = "",                    Select = string.Join(",", grid0.ColumnsCollection.Where(c => c.GetVisible() && !string.IsNullOrEmpty(c.Property)).Select(c => c.Property.Contains(".") ? c.Property + " as " + c.Property.Replace(".", "") : c.Property))                }, "RegistrationPoints");
+            await ApplicationDbService.ExportRegistrationPointsToCSV(new Query                {                    Filter = $@"{(string.IsNullOrEmpty(dataGrid.Query.Filter) ? "true" : dataGrid.Query.Filter)}",                    OrderBy = $"{dataGrid.Query.OrderBy}",                    Expand = "",                    Select = string.Join(",", dataGrid.ColumnsCollection.Where(c => c.GetVisible() && !string.IsNullOrEmpty(c.Property)).Select(c => c.Property.Contains(".") ? c.Property + " as " + c.Property.Replace(".", "") : c.Property))                }, "RegistrationPoints");
         }
 
         if (args == null || args.Value == "xlsx")
         {
-            await ApplicationDbService.ExportRegistrationPointsToExcel(new Query                {                    Filter = $@"{(string.IsNullOrEmpty(grid0.Query.Filter) ? "true" : grid0.Query.Filter)}",                    OrderBy = $"{grid0.Query.OrderBy}",                    Expand = "",                    Select = string.Join(",", grid0.ColumnsCollection.Where(c => c.GetVisible() && !string.IsNullOrEmpty(c.Property)).Select(c => c.Property.Contains(".") ? c.Property + " as " + c.Property.Replace(".", "") : c.Property))                }, "RegistrationPoints");
+            await ApplicationDbService.ExportRegistrationPointsToExcel(new Query                {                    Filter = $@"{(string.IsNullOrEmpty(dataGrid.Query.Filter) ? "true" : dataGrid.Query.Filter)}",                    OrderBy = $"{dataGrid.Query.OrderBy}",                    Expand = "",                    Select = string.Join(",", dataGrid.ColumnsCollection.Where(c => c.GetVisible() && !string.IsNullOrEmpty(c.Property)).Select(c => c.Property.Contains(".") ? c.Property + " as " + c.Property.Replace(".", "") : c.Property))                }, "RegistrationPoints");
         }
     }}
