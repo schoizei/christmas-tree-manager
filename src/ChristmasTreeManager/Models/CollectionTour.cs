@@ -12,6 +12,8 @@ public class CollectionTour
 
     public string Driver { get; set; } = string.Empty;
 
+    public string TeamLeader { get; set; } = string.Empty;
+
     public string Staff { get; set; } = string.Empty;
 
     public string? CreatedBy { get; set; }
@@ -35,6 +37,7 @@ public class CollectionTour
             Name = entity.Name,
             Vehicle = entity.Vehicle,
             Driver = entity.Driver,
+            TeamLeader = entity.TeamLeader,
             Staff = entity.Staff
         };
     }
@@ -47,6 +50,7 @@ public class CollectionTour
             Name = Name ?? throw new InvalidOperationException("Property [RegistrationPoint.Name] is null!"),
             Vehicle = Vehicle,
             Driver = Driver,
+            TeamLeader = TeamLeader,
             Staff = Staff
         };
     }

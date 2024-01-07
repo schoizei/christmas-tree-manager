@@ -13,26 +13,6 @@ public partial class ApplicationDbContext : DbContext
     {
     }
 
-    //partial void OnModelBuilding(ModelBuilder builder);
-
-    //protected override void OnModelCreating(ModelBuilder builder)
-    //{
-    //    base.OnModelCreating(builder);
-
-    //    builder.Entity<Street>()
-    //      .HasOne(i => i.CollectionTour)
-    //      .WithMany(i => i.Streets)
-    //      .HasForeignKey(i => i.CollectionTourId)
-    //      .HasPrincipalKey(i => i.Id);
-
-    //    builder.Entity<Street>()
-    //      .HasOne(i => i.DistributionTour)
-    //      .WithMany(i => i.Streets)
-    //      .HasForeignKey(i => i.DistributionTourId)
-    //      .HasPrincipalKey(i => i.Id);
-    //    OnModelBuilding(builder);
-    //}
-
     public DbSet<StreetEntity> Streets { get; set; }
 
     public DbSet<DistributionTourEntity> DistributionTours { get; set; }

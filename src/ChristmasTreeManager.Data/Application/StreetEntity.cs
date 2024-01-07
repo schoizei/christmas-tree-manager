@@ -21,7 +21,7 @@ public class StreetEntity : AuditableEntity
 
     public string? DistributionTourId { get; set; }
     public DistributionTourEntity? DistributionTour { get; set; }
-    public uint DistributionTourOrderNumber { get; set; } = 0;
+    public uint DistributionTourFormCount { get; set; } = 0;
 
     public string? CollectionTourId { get; set; }
     public CollectionTourEntity? CollectionTour { get; set; }

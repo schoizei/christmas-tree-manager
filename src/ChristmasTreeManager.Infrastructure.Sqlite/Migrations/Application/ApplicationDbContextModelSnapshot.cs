@@ -41,6 +41,10 @@ namespace ChristmasTreeManager.Infrastructure.Sqlite.Migrations.Application
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TeamLeader")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
@@ -223,11 +227,11 @@ namespace ChristmasTreeManager.Infrastructure.Sqlite.Migrations.Application
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<uint>("DistributionTourFormCount")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("DistributionTourId")
                         .HasColumnType("TEXT");
-
-                    b.Property<uint>("DistributionTourOrderNumber")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("District")
                         .IsRequired()

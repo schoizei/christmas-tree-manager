@@ -1,0 +1,42 @@
+@page "/collection-tours/{collectionTourId}/registrations"@attribute [Authorize]@inject IJSRuntime JSRuntime@inject NavigationManager NavigationManager@inject DialogService DialogService@inject ContextMenuService ContextMenuService@inject TooltipService TooltipService@inject NotificationService NotificationService@inject ApplicationDbService ApplicationDbService<RadzenStack>    <RadzenRow AlignItems="AlignItems.Center">        <RadzenColumn Size="12" SizeMD="6">            <RadzenText Text="@title" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />        </RadzenColumn>        <RadzenColumn Size="12" SizeMD="6">            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">                <RadzenSplitButton Icon="get_app" Text="Export" Click="@ExportClick" Variant="Variant.Flat" Shade="Shade.Lighter">                    <RadzenSplitButtonItem Text="Excel" Value="xlsx" />                    <RadzenSplitButtonItem Text="CSV" Value="csv" />                </RadzenSplitButton>            </RadzenStack>        </RadzenColumn>    </RadzenRow>    <RadzenRow>        <RadzenColumn SizeMD=12>            <RadzenDataGrid @ref="dataGrid" ColumnWidth="200px" AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{10, 50, 100, 500}) PageSize=10 Data="@data" TItem="Registration" RowDoubleClick="@EditRow">                <Columns>                    <RadzenDataGridColumn TItem="Registration" Property="RegistrationDate" Title="Anmeldung" FormatString="{0:d}" Width="125px">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="RegistrationPointName" Title="Annahmestelle" Width="225px">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="Customer" Title="Name" Width="225px">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="Street" Title="Stra&szlig;e" Width="300px">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="DisplayHousenumber" Title="Hausnummer" Width="100px">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="TreeCount" Title="Anzahl" Width="100px">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="Donation" Title="Betrag" Width="100px">                        <Template Context="data">                            <RadzenBadge BadgeStyle="BadgeStyle.Success" Shade="Shade.Dark" Variant="Variant.Outlined" class="price-badge rz-p-1" Text=@($"{String.Format(new System.Globalization.CultureInfo("de-DE"), "{0:C}", data.Donation)}") />                        </Template>                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="Phone" Title="Telefon" Width="150px">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="Mail" Title="E-Mail" Width="150px">                    </RadzenDataGridColumn>                    <RadzenDataGridColumn TItem="Registration" Property="Comment" Title="Kommentar" Width="300px">                    </RadzenDataGridColumn>                </Columns>            </RadzenDataGrid>        </RadzenColumn>    </RadzenRow></RadzenStack>@code {
+    [Inject]    protected SecurityService Security { get; set; } = null!;    [Parameter]    public required string CollectionTourId { get; set; }
+    protected CollectionTour collectionTour = null!;
+
+    protected string title = null!;
+    protected IEnumerable<Registration> data = null!;
+    protected RadzenDataGrid<Registration> dataGrid = null!;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        data = await ApplicationDbService.GetRegistrationsForCollectionTour(CollectionTourId);
+
+        collectionTour = await ApplicationDbService.GetCollectionTourById(CollectionTourId) ?? throw new InvalidOperationException("Failed to query Entity!");
+        title = $"Anmeldungen für Tour {collectionTour.Name}";
+    }
+
+    protected async Task EditRow(DataGridRowMouseEventArgs<Registration> args)
+    {
+        await DialogService.OpenAsync<EditRegistration>("Anmeldung bearbeiten", new Dictionary<string, object> { { "Id", args.Data.Id! } });
+        await dataGrid.Reload();
+    }
+
+    protected async Task ExportClick(RadzenSplitButtonItem args)
+    {
+        var idStrings = string.Join(",", data.Select(x => "\"" + x.Id + "\""));
+        var query = new Query        {
+            Filter = $"new string[] {{ {idStrings} }}.Contains(Id)",            OrderBy = $"{dataGrid.Query.OrderBy}",            Expand = "RegistrationPoint,Street",            Select = string.Join(",", dataGrid.ColumnsCollection.Where(c => c.GetVisible() && !string.IsNullOrEmpty(c.Property)).Select(c => c.Property.Contains(".") ? c.Property + " as " + c.Property.Replace(".", "") : c.Property))        };
+
+        if (args?.Value == "csv")
+        {
+            var uri = query.ToUrl($"export/registrations/csv(fileName='{UrlEncoder.Default.Encode("Registrations")}')");
+            NavigationManager.NavigateTo(uri, true);
+        }
+
+        if (args == null || args.Value == "xlsx")
+        {
+            var uri = query.ToUrl($"export/registrations/excel(fileName='{UrlEncoder.Default.Encode("Registrations")}')");
+            NavigationManager.NavigateTo(uri, true);
+        }
+    }}

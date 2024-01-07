@@ -1,10 +1,12 @@
 @page "/application-roles"
+
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 @inject DialogService DialogService
 @inject ContextMenuService ContextMenuService
 @inject TooltipService TooltipService
 @inject NotificationService NotificationService
+
 @attribute [Authorize]
 
 <RadzenStack>
@@ -21,7 +23,7 @@
     <RadzenRow>
         <RadzenColumn SizeMD="12">
             <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot delete role" Visible="@errorVisible">@error</RadzenAlert>
-                <RadzenDataGrid @ref="dataGrid" AllowFiltering="true" AllowPaging="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{10, 50, 100, 500}) PageSize=50 AllowSorting="true" Data="@data" TItem="ApplicationRole">
+                <RadzenDataGrid @ref="dataGrid" AllowFiltering="true" AllowPaging="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{10, 50, 100, 500}) PageSize=10 AllowSorting="true" Data="@data" TItem="ApplicationRole">
                     <Columns>
                         <RadzenDataGridColumn TItem="ApplicationRole" Property="Name" Title="Name" />
                         <RadzenDataGridColumn TItem="ApplicationRole" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
@@ -61,7 +63,7 @@
     {
         try
         {
-            if (await DialogService.Confirm("Sind Sie sicher, dass Sie diese Rolle l&ouml;schen m&ouml;chten?") == true)
+            if (await DialogService.Confirm("Sind Sie sicher, dass Sie diese Rolle l&ouml;schen m&ouml;chten?", "Best&auml;tigung") == true)
             {
                 await Security.DeleteRole($"{role.Id}");
             }

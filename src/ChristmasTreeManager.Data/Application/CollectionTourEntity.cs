@@ -13,6 +13,8 @@ public class CollectionTourEntity : AuditableEntity
 
     public string Driver { get; set; } = string.Empty;
 
+    public string TeamLeader { get; set; } = string.Empty;
+
     public string Staff { get; set; } = string.Empty;
 
     public IList<StreetEntity> Streets { get; set; } = [];

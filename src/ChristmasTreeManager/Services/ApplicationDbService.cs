@@ -1,25 +1,16 @@
 using ChristmasTreeManager.Data.Application;
 using ChristmasTreeManager.Infrastructure;
 using ChristmasTreeManager.Models;
-using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
 using System.Data;
 using System.Linq.Dynamic.Core;
-using System.Text.Encodings.Web;
 
 namespace ChristmasTreeManager.Services;
 
-public class ApplicationDbService
+public class ApplicationDbService(ApplicationDbContext context)
 {
-    private readonly ApplicationDbContext _context;
-    private readonly NavigationManager _navigationManager;
-
-    public ApplicationDbService(ApplicationDbContext context, NavigationManager navigationManager)
-    {
-        _context = context;
-        _navigationManager = navigationManager;
-    }
+    private readonly ApplicationDbContext _context = context;
 
     public void Reset() => _context.ChangeTracker.Entries().Where(e => e.Entity is not null).ToList().ForEach(e => e.State = EntityState.Detached);
 
@@ -62,16 +53,6 @@ public class ApplicationDbService
         }
     }
 
-    public async Task ExportRegistrationsToExcel(Query? query = null, string? fileName = null)
-    {
-        _navigationManager.NavigateTo(query is not null ? query.ToUrl($"export/registrations/excel(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')") : $"export/registrations/excel(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')", true);
-    }
-
-    public async Task ExportRegistrationsToCSV(Query? query = null, string? fileName = null)
-    {
-        _navigationManager.NavigateTo(query is not null ? query.ToUrl($"export/registrations/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')") : $"export/registrations/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')", true);
-    }
-
     public IQueryable<RegistrationEntity> GetRegistrationEntities()
     {
         return _context.Registrations.AsQueryable();
@@ -94,6 +75,20 @@ public class ApplicationDbService
 
             ApplyQuery(ref items, query);
         }
+
+        return await Task.FromResult(items.Select(Registration.FromEntity).AsQueryable());
+    }
+
+    public async Task<IQueryable<Registration>> GetRegistrationsForCollectionTour(string collectionTourId)
+    {
+        var items = GetRegistrationEntities()
+            .Join(GetStreetEntities(),
+                registration => registration.StreetId, street => street.Id,
+                (registration, street) => new { Registration = registration, Street = street })
+            .Where(joinResult => joinResult.Street.CollectionTourId == collectionTourId)
+            .Select(joinResult => joinResult.Registration)
+            .Include(x => x.Street)
+            .Include(x => x.RegistrationPoint);
 
         return await Task.FromResult(items.Select(Registration.FromEntity).AsQueryable());
     }
@@ -188,17 +183,6 @@ public class ApplicationDbService
         return Registration.FromEntity(itemToDelete);
     }
 
-    public async Task ExportCollectionToursToExcel(Query? query = null, string? fileName = null)
-    {
-        _navigationManager.NavigateTo(query is not null ? query.ToUrl($"export/collectiontours/excel(fileName='{(!string.IsNullOrEmpty(fileName) ?
-            UrlEncoder.Default.Encode(fileName) : "Export")}')") : $"export/collectiontours/excel(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')", true);
-    }
-
-    public async Task ExportCollectionToursToCSV(Query? query = null, string? fileName = null)
-    {
-        _navigationManager.NavigateTo(query is not null ? query.ToUrl($"export/collectiontours/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')") : $"export/collectiontours/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')", true);
-    }
-
     public IQueryable<CollectionTourEntity> GetCollectionTourEntities()
     {
         return _context.CollectionTours.AsQueryable();
@@ -271,6 +255,7 @@ public class ApplicationDbService
         entryToUpdate.Entity.Name = collectionTour.Name!;
         entryToUpdate.Entity.Vehicle = collectionTour.Vehicle;
         entryToUpdate.Entity.Driver = collectionTour.Driver;
+        entryToUpdate.Entity.TeamLeader = collectionTour.TeamLeader;
         entryToUpdate.Entity.Staff = collectionTour.Staff;
         entryToUpdate.Entity.UpdatedBy = user;
         entryToUpdate.Entity.UpdatedAt = DateTime.UtcNow;
@@ -300,16 +285,6 @@ public class ApplicationDbService
         }
 
         return CollectionTour.FromEntity(itemToDelete);
-    }
-
-    public async Task ExportDistributionToursToExcel(Query? query = null, string? fileName = null)
-    {
-        _navigationManager.NavigateTo(query is not null ? query.ToUrl($"export/distributiontours/excel(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')") : $"export/distributiontours/excel(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')", true);
-    }
-
-    public async Task ExportDistributionToursToCSV(Query? query = null, string? fileName = null)
-    {
-        _navigationManager.NavigateTo(query is not null ? query.ToUrl($"export/distributiontours/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')") : $"export/distributiontours/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')", true);
     }
 
     public IQueryable<DistributionTourEntity> GetDistributionTourEntities()
@@ -412,16 +387,6 @@ public class ApplicationDbService
         }
 
         return DistributionTour.FromEntity(itemToDelete);
-    }
-
-    public async Task ExportRegistrationPointsToExcel(Query? query = null, string? fileName = null)
-    {
-        _navigationManager.NavigateTo(query is not null ? query.ToUrl($"export/registrationpoints/excel(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')") : $"export/registrationpoints/excel(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')", true);
-    }
-
-    public async Task ExportRegistrationPointsToCSV(Query? query = null, string? fileName = null)
-    {
-        _navigationManager.NavigateTo(query is not null ? query.ToUrl($"export/registrationpoints/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')") : $"export/registrationpoints/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')", true);
     }
 
     public IQueryable<RegistrationPointEntity> GetRegistrationPointEntities()
@@ -528,16 +493,6 @@ public class ApplicationDbService
         return RegistrationPoint.FromEntity(itemToDelete);
     }
 
-    public async Task ExportStreetsToExcel(Query? query = null, string? fileName = null)
-    {
-        _navigationManager.NavigateTo(query is not null ? query.ToUrl($"export/streets/excel(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')") : $"export/streets/excel(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')", true);
-    }
-
-    public async Task ExportStreetsToCSV(Query? query = null, string? fileName = null)
-    {
-        _navigationManager.NavigateTo(query is not null ? query.ToUrl($"export/streets/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')") : $"export/streets/csv(fileName='{(!string.IsNullOrEmpty(fileName) ? UrlEncoder.Default.Encode(fileName) : "Export")}')", true);
-    }
-
     public IQueryable<StreetEntity> GetStreetEntities()
     {
         return _context.Streets.AsQueryable();
@@ -617,7 +572,7 @@ public class ApplicationDbService
         entryToUpdate.Entity.LowestHouseNumber = street.LowestHouseNumber;
         entryToUpdate.Entity.HighestHouseNumber = street.HighestHouseNumber;
         entryToUpdate.Entity.DistributionTourId = street.DistributionTourId;
-        entryToUpdate.Entity.DistributionTourOrderNumber = street.DistributionTourOrderNumber;
+        entryToUpdate.Entity.DistributionTourFormCount = street.DistributionTourFormCount;
         entryToUpdate.Entity.CollectionTourId = street.CollectionTourId;
         entryToUpdate.Entity.CollectionTourOrderNumber = street.CollectionTourOrderNumber;
         entryToUpdate.Entity.UpdatedBy = user;

@@ -21,7 +21,7 @@ public class Street
 
     public string? DistributionTourId { get; set; }
     public string? DistributionTourName { get; set; }
-    public uint DistributionTourOrderNumber { get; set; } = 0;
+    public uint DistributionTourFormCount { get; set; } = 0;
 
     public string? CollectionTourId { get; set; }
     public string? CollectionTourName { get; set; }
@@ -53,7 +53,7 @@ public class Street
             HighestHouseNumber = entity.HighestHouseNumber,
             DistributionTourId = entity.DistributionTour?.Id.ToString(),
             DistributionTourName = entity.DistributionTour?.Name,
-            DistributionTourOrderNumber = entity.DistributionTourOrderNumber,
+            DistributionTourFormCount = entity.DistributionTourFormCount,
             CollectionTourId = entity.CollectionTour?.Id.ToString(),
             CollectionTourName = entity.CollectionTour?.Name,
             CollectionTourOrderNumber = entity.CollectionTourOrderNumber
@@ -72,7 +72,7 @@ public class Street
             LowestHouseNumber = LowestHouseNumber,
             HighestHouseNumber = HighestHouseNumber,
             DistributionTourId = DistributionTourId,
-            DistributionTourOrderNumber = DistributionTourOrderNumber,
+            DistributionTourFormCount = DistributionTourFormCount,
             CollectionTourId = CollectionTourId,
             CollectionTourOrderNumber = CollectionTourOrderNumber
         };
