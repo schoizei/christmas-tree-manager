@@ -13,7 +13,7 @@
         data = await ApplicationDbService.GetRegistrationsForCollectionTour(CollectionTourId);
 
         collectionTour = await ApplicationDbService.GetCollectionTourById(CollectionTourId) ?? throw new InvalidOperationException("Failed to query Entity!");
-        title = $"Anmeldungen für Tour {collectionTour.Name}";
+        title = $"Anmeldungen f&uuml;r Tour {collectionTour.Name}";
     }
 
     protected async Task EditRow(DataGridRowMouseEventArgs<Registration> args)

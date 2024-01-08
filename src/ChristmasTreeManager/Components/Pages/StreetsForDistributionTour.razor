@@ -16,7 +16,7 @@
             Expand = "CollectionTour,DistributionTour"
         });
         distributionTour = await ApplicationDbService.GetDistributionTourById(DistributionTourId) ?? throw new InvalidOperationException("Failed to query Entity!");
-        title = $"Straßen für Tour {distributionTour.Name}";
+        title = $"Stra&szlig;en für Tour {distributionTour.Name}";
     }
 
     protected async Task EditRow(DataGridRowMouseEventArgs<Street> args)
