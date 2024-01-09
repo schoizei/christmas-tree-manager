@@ -20,12 +20,12 @@ public class Street
     public uint HighestHouseNumber { get; set; } = uint.MaxValue;
 
     public string? DistributionTourId { get; set; }
-    public string? DistributionTourName { get; set; }
-    public uint DistributionTourFormCount { get; set; } = 0;
+    public DistributionTour? DistributionTour { get; private set; }
+    public uint DistributionTourFormCount { get; set; }
 
     public string? CollectionTourId { get; set; }
-    public string? CollectionTourName { get; set; }
-    public uint CollectionTourOrderNumber { get; set; } = 0;
+    public CollectionTour? CollectionTour { get; private set; }
+    public uint CollectionTourOrderNumber { get; set; }
 
     public string? CreatedBy { get; set; }
 
@@ -51,11 +51,11 @@ public class Street
             DisplayName = entity.DisplayName,
             LowestHouseNumber = entity.LowestHouseNumber,
             HighestHouseNumber = entity.HighestHouseNumber,
-            DistributionTourId = entity.DistributionTour?.Id.ToString(),
-            DistributionTourName = entity.DistributionTour?.Name,
+            DistributionTourId = entity.DistributionTour is null ? null : entity.DistributionTour.Id,
+            DistributionTour = entity.DistributionTour is null ? null : DistributionTour.FromEntity(entity.DistributionTour),
             DistributionTourFormCount = entity.DistributionTourFormCount,
-            CollectionTourId = entity.CollectionTour?.Id.ToString(),
-            CollectionTourName = entity.CollectionTour?.Name,
+            CollectionTourId = entity.CollectionTour is null ? null : entity.CollectionTourId,
+            CollectionTour = entity.CollectionTour is null ? null : CollectionTour.FromEntity(entity.CollectionTour),
             CollectionTourOrderNumber = entity.CollectionTourOrderNumber
         };
     }
@@ -71,9 +71,7 @@ public class Street
             District = District ?? throw new InvalidOperationException("Property [RegistrationPoint.District] is null!"),
             LowestHouseNumber = LowestHouseNumber,
             HighestHouseNumber = HighestHouseNumber,
-            DistributionTourId = DistributionTourId,
             DistributionTourFormCount = DistributionTourFormCount,
-            CollectionTourId = CollectionTourId,
             CollectionTourOrderNumber = CollectionTourOrderNumber
         };
     }

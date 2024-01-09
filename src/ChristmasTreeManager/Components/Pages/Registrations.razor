@@ -37,7 +37,7 @@
     {
         try
         {
-            if (await DialogService.Confirm("Sind Sie sicher, dass Sie diese Sammlungstour l&ouml;schen wollen?", "Best&auml;tigung") == true)
+            if (await DialogService.Confirm("Sind Sie sicher, dass Sie diese Anmeldung l&ouml;schen wollen?", "Best&auml;tigung") == true)
             {
                 var deleteResult = await ApplicationDbService.DeleteRegistration(registration.Id!);
                 if (deleteResult != null)
