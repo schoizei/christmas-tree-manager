@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OData.ModelBuilder;
 using Radzen;
+using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,7 @@ builder.Services
 
 builder.Services
     .AddRadzenComponents()
+    .AddHotKeys2()
     .AddHttpClient();
 
 builder.Services
