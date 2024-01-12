@@ -79,7 +79,7 @@ public class ApplicationDbService(ApplicationDbContext context)
         return await Task.FromResult(items.Select(Registration.FromEntity).AsQueryable());
     }
 
-    public async Task<IQueryable<Registration>> GetRegistrationsForCollectionTour(string collectionTourId)
+    public async Task<IQueryable<RegistrationExport>> GetRegistrationsForCollectionTour(string collectionTourId)
     {
         var items = GetRegistrationEntities()
             .Join(GetStreetEntities(),
@@ -88,9 +88,12 @@ public class ApplicationDbService(ApplicationDbContext context)
             .Where(joinResult => joinResult.Street.CollectionTourId == collectionTourId)
             .Select(joinResult => joinResult.Registration)
             .Include(x => x.Street)
-            .Include(x => x.RegistrationPoint);
+            .Include(x => x.RegistrationPoint)
+            .OrderBy(x => x.Street.CollectionTourOrderNumber)
+            .ThenBy(x => x.Street.Name)
+            .ThenBy(x => x.Housenumber);
 
-        return await Task.FromResult(items.Select(Registration.FromEntity).AsQueryable());
+        return await Task.FromResult(items.Select(RegistrationExport.FromEntity).AsQueryable());
     }
 
     public async Task<Registration?> GetRegistrationById(string id)
