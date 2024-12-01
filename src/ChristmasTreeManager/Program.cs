@@ -26,7 +26,8 @@ builder.Services
 
 builder.Services
     .AddHttpClient("ChristmasTreeManager")
-    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false }).AddHeaderPropagation(o => o.Headers.Add("Cookie"));
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false })
+    .AddHeaderPropagation(o => o.Headers.Add("Cookie"));
 
 builder.Services
     .AddDbContext<ApplicationDbContext>(options =>
@@ -35,12 +36,12 @@ builder.Services
         var databaseProvider = builder.Configuration.GetValue(nameof(DatabaseProvider), DatabaseProvider.Sqlite.Name);
         if (databaseProvider == DatabaseProvider.Sqlite.Name)
         {
-            Console.WriteLine("[ApplicationDbContext] Use DatabaseProvider.Sqlite");
+            Console.WriteLine($"[ApplicationDbContext] Use DatabaseProvider.Sqlite with ConnectionString [{connectionString}]");
             options.UseSqlite(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Sqlite.Assembly));
         }
         else if (databaseProvider == DatabaseProvider.Postgres.Name)
         {
-            Console.WriteLine("[ApplicationDbContext] Use DatabaseProvider.Postgres");
+            Console.WriteLine($"[ApplicationDbContext] Use DatabaseProvider.Postgres with ConnectionString [{connectionString}]");
             options.UseNpgsql(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Postgres.Assembly));
         }
         else
@@ -51,7 +52,6 @@ builder.Services
     .AddScoped<ApplicationDbService>();
 
 
-builder.Services.AddHeaderPropagation(o => o.Headers.Add("Cookie"));
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 
