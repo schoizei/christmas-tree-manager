@@ -4,19 +4,23 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
+	<ContainerRepository>christmas-tree-manager</ContainerRepository>
   </PropertyGroup>
+	
   <ItemGroup>
     <None Remove="Fonts\Arial\Arial.ttf" />
     <None Remove="Fonts\Arial\ArialBold.ttf" />
     <None Remove="Fonts\Arial\ArialBoldItalic.ttf" />
     <None Remove="Fonts\Arial\ArialItalic.ttf" />
   </ItemGroup>
+	
   <ItemGroup>
     <EmbeddedResource Include="Fonts\Arial\Arial.ttf" />
     <EmbeddedResource Include="Fonts\Arial\ArialBold.ttf" />
     <EmbeddedResource Include="Fonts\Arial\ArialBoldItalic.ttf" />
     <EmbeddedResource Include="Fonts\Arial\ArialItalic.ttf" />
   </ItemGroup>
+	
   <ItemGroup>
     <PackageReference Include="DocX" Version="3.0.1" />
     <PackageReference Include="iTextSharp.LGPLv2.Core" Version="3.4.23" />
@@ -33,11 +37,9 @@
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="9.1.1" />
     <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="5.1.0" />
   </ItemGroup>
+	
   <ItemGroup>
     <ProjectReference Include="..\ChristmasTreeManager.Infrastructure.Postgres\ChristmasTreeManager.Infrastructure.Postgres.csproj" />
     <ProjectReference Include="..\ChristmasTreeManager.Infrastructure.Sqlite\ChristmasTreeManager.Infrastructure.Sqlite.csproj" />
-  </ItemGroup>
-	<ItemGroup>
-		<DotNetCliToolReference Include="DotnetPublishSsh" Version="0.1.0" />
-	</ItemGroup>
+  </ItemGroup>	
 </Project>
