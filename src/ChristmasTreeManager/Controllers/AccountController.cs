@@ -179,7 +179,6 @@ public partial class AccountController : Controller
         var user = await userManager.FindByIdAsync(userId);
 
         var result = await userManager.ConfirmEmailAsync(user, code);
-
         if (result.Succeeded)
         {
             return Redirect("~/Login?info=Your registration has been confirmed");

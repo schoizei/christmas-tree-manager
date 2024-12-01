@@ -107,7 +107,7 @@ public partial class ReportController : Controller
                 await currentReqest.Body.CopyToAsync(stream);
                 stream.Position = 0;
 
-                string body = new StreamReader(stream).ReadToEnd();
+                string body = await new StreamReader(stream).ReadToEndAsync();
                 proxyRequestMessage.Content = new StringContent(body);
 
                 if (body.IndexOf("AjaxScriptManager") != -1)

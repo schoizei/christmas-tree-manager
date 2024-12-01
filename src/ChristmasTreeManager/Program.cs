@@ -26,7 +26,7 @@ builder.Services
 
 builder.Services
     .AddHttpClient("ChristmasTreeManager")
-    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false }).AddHeaderPropagation(o => o.Headers.Add("Cookie")); ;
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false }).AddHeaderPropagation(o => o.Headers.Add("Cookie"));
 
 builder.Services
     .AddDbContext<ApplicationDbContext>(options =>
@@ -38,11 +38,6 @@ builder.Services
             Console.WriteLine("[ApplicationDbContext] Use DatabaseProvider.Sqlite");
             options.UseSqlite(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Sqlite.Assembly));
         }
-        else if (databaseProvider == DatabaseProvider.MySql.Name)
-        {
-            Console.WriteLine("[ApplicationDbContext] Use DatabaseProvider.MySql");
-            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), x => x.MigrationsAssembly(DatabaseProvider.MySql.Assembly));
-        }
         else if (databaseProvider == DatabaseProvider.Postgres.Name)
         {
             Console.WriteLine("[ApplicationDbContext] Use DatabaseProvider.Postgres");
@@ -50,7 +45,7 @@ builder.Services
         }
         else
         {
-            throw new Exception("No valid database provider found!");
+            throw new InvalidOperationException("No valid database provider found!");
         }
     })
     .AddScoped<ApplicationDbService>();
@@ -70,11 +65,6 @@ builder.Services
             Console.WriteLine("[IdentityDbContext] Use DatabaseProvider.Sqlite");
             options.UseSqlite(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Sqlite.Assembly));
         }
-        else if (databaseProvider == DatabaseProvider.MySql.Name)
-        {
-            Console.WriteLine("[IdentityDbContext] Use DatabaseProvider.MySql");
-            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), x => x.MigrationsAssembly(DatabaseProvider.MySql.Assembly));
-        }
         else if (databaseProvider == DatabaseProvider.Postgres.Name)
         {
             Console.WriteLine("[IdentityDbContext] Use DatabaseProvider.Postgres");
@@ -82,7 +72,7 @@ builder.Services
         }
         else
         {
-            throw new Exception("No valid database provider found!");
+            throw new InvalidOperationException("No valid database provider found!");
         }
     })
     .AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>()
@@ -133,10 +123,13 @@ app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 try
 {
     using var scope = app.Services.CreateScope();
-    scope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.Migrate();
-    scope.ServiceProvider.GetRequiredService<IdentityDbContext>().Database.Migrate();
+    await scope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.MigrateAsync();
+    await scope.ServiceProvider.GetRequiredService<IdentityDbContext>().Database.MigrateAsync();
     scope.ServiceProvider.GetRequiredService<IdentityDbContext>().SeedSupperUser();
 }
-catch { }
+catch
+{
+    //NOP
+}
 
-app.Run();
+await app.RunAsync();
