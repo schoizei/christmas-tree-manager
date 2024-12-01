@@ -8,7 +8,8 @@ on:
 
 env:
   IMAGE_REGISTRY: docker.io
-  IMAGE_NAME: florianscholzsrssoftware/christmas-tree-manager
+  IMAGE_NAME: christmas-tree-manager
+  IMAGE_REPO: florianscholzsrssoftware/christmas-tree-manager
 
 jobs:
   build:
@@ -34,7 +35,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Tag docker image
-        run: docker tag ${{ env.IMAGE_NAME }} ${{ env.IMAGE_REGISTRY }}/${{ github.repository }}:latest
+        run: docker tag ${{ env.IMAGE_NAME }} ${{ env.IMAGE_REPO }}:latest
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -43,4 +44,4 @@ jobs:
           images: ${{ env.IMAGE_NAME }}
       
       - name: Push Docker image
-        run: docker push ${{ env.IMAGE_NAME }}:latest
+        run: docker push ${{ env.IMAGE_REPO }}:latest
