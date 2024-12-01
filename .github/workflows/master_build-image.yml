@@ -22,11 +22,7 @@ jobs:
         with:
           dotnet-version: '9'
           include-prerelease: false
-
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
-        working-directory: ./src
-
+          
       - name: dotnet publish container
         run: dotnet publish --os linux --arch x64 /t:PublishContainer
         working-directory: ./src        
@@ -44,9 +40,9 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
       
-      - name: Build and push Docker image
+      - name: Push Docker image
         id: push
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        uses: docker/setup-buildx-action@v2
         with:
           context: .
           push: true
@@ -59,8 +55,3 @@ jobs:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
-      # - name: Upload artifact for deployment job
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: .net-app
-      #     path: ${{env.DOTNET_ROOT}}/myapp
