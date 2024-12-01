@@ -15,7 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChristmasTreeManager.Infras
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projektmappenelemente", "Projektmappenelemente", "{0F695B10-009C-4C12-9973-D159F0D2A8AC}"
 	ProjectSection(SolutionItems) = preProject
-		..\.github\workflows\master_ctm-prod-ger.yml = ..\.github\workflows\master_ctm-prod-ger.yml
+		Dockerfile = Dockerfile
+		..\.github\workflows\master_build-image.yml = ..\.github\workflows\master_build-image.yml
 	EndProjectSection
 EndProject
 Global
