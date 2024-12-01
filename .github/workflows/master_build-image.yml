@@ -35,7 +35,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Tag docker image
-        run: docker tag ${{ env.IMAGE_NAME }} ${{ env.IMAGE_REGISTRY }}/${{ github.repository }}
+        run: docker tag ${{ env.IMAGE_NAME }} ${{ env.IMAGE_REGISTRY }}/${{ github.repository }}:latest
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
