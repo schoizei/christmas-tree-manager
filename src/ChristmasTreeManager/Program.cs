@@ -11,49 +11,44 @@ using Microsoft.OData.ModelBuilder;
 using Radzen;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services
-    .AddRazorComponents()
-    .AddInteractiveServerComponents();
-
-builder.Services
-    .AddRadzenComponents()
-    .AddHotKeys2()
-    .AddHttpClient();
-
-builder.Services
-    .AddHttpClient("ChristmasTreeManager")
-    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false })
-    .AddHeaderPropagation(o => o.Headers.Add("Cookie"));
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents()
+    .AddHubOptions(options => options.MaximumReceiveMessageSize = 10 * 1024 * 1024);
+builder.Services.AddControllers();
+builder.Services.AddRadzenComponents();
+builder.Services.AddHotKeys2();
+builder.Services.AddRadzenCookieThemeService(options =>
+{
+    options.Name = "ChristmasTreeManagerTheme";
+    options.Duration = TimeSpan.FromDays(365);
+});
+builder.Services.AddHttpClient();
 
 builder.Services
     .AddDbContext<ApplicationDbContext>(options =>
-    {
-        var connectionString = builder.Configuration.GetConnectionString("Application");
-        var databaseProvider = builder.Configuration.GetValue(nameof(DatabaseProvider), DatabaseProvider.Sqlite.Name);
-        if (databaseProvider == DatabaseProvider.Sqlite.Name)
-        {
-            Console.WriteLine($"[ApplicationDbContext] Use DatabaseProvider.Sqlite with ConnectionString [{connectionString}]");
-            options.UseSqlite(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Sqlite.Assembly));
-        }
-        else if (databaseProvider == DatabaseProvider.Postgres.Name)
-        {
-            Console.WriteLine($"[ApplicationDbContext] Use DatabaseProvider.Postgres with ConnectionString [{connectionString}]");
-            options.UseNpgsql(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Postgres.Assembly));
-        }
-        else
-        {
-            throw new InvalidOperationException("No valid database provider found!");
-        }
-    })
-    .AddScoped<ApplicationDbService>();
-
-
-builder.Services.AddAuthentication();
-builder.Services.AddAuthorization();
+     {
+         var connectionString = builder.Configuration.GetConnectionString("Application");
+         var databaseProvider = builder.Configuration.GetValue(nameof(DatabaseProvider), DatabaseProvider.Sqlite.Name);
+         if (databaseProvider == DatabaseProvider.Sqlite.Name)
+         {
+             Console.WriteLine($"[ApplicationDbContext] Use DatabaseProvider.Sqlite with ConnectionString [{connectionString}]");
+             options.UseSqlite(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Sqlite.Assembly));
+         }
+         else if (databaseProvider == DatabaseProvider.Postgres.Name)
+         {
+             Console.WriteLine($"[ApplicationDbContext] Use DatabaseProvider.Postgres with ConnectionString [{connectionString}]");
+             options.UseNpgsql(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Postgres.Assembly));
+         }
+         else
+         {
+             throw new InvalidOperationException("No valid database provider found!");
+         }
+     })
+    .AddScoped<ApplicationDbService>()
+    .AddScoped<ExportService>();
 
 builder.Services
     .AddDbContext<IdentityDbContext>(options =>
@@ -62,12 +57,12 @@ builder.Services
         var databaseProvider = builder.Configuration.GetValue(nameof(DatabaseProvider), DatabaseProvider.Sqlite.Name);
         if (databaseProvider == DatabaseProvider.Sqlite.Name)
         {
-            Console.WriteLine("[IdentityDbContext] Use DatabaseProvider.Sqlite");
+            Console.WriteLine($"[IdentityDbContext] Use DatabaseProvider.Sqlite with ConnectionString [{connectionString}]");
             options.UseSqlite(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Sqlite.Assembly));
         }
         else if (databaseProvider == DatabaseProvider.Postgres.Name)
         {
-            Console.WriteLine("[IdentityDbContext] Use DatabaseProvider.Postgres");
+            Console.WriteLine($"[IdentityDbContext] Use DatabaseProvider.Postgres with ConnectionString [{connectionString}]");
             options.UseNpgsql(connectionString, x => x.MigrationsAssembly(DatabaseProvider.Postgres.Assembly));
         }
         else
@@ -75,33 +70,35 @@ builder.Services
             throw new InvalidOperationException("No valid database provider found!");
         }
     })
-    .AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>()
     .AddScoped<SecurityService>()
-    .AddScoped<ExportService>();
+    .AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
 
-builder.Services
-    .AddIdentity<ApplicationUser, ApplicationRole>()
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<IdentityDbContext>()
     .AddDefaultTokenProviders();
 
 builder.Services
-    .AddControllers()
-    .AddOData(options =>
-    {
-        var modelBuilder = new ODataConventionModelBuilder();
+    .AddHttpClient("ChristmasTreeManager")
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false })
+    .AddHeaderPropagation(o => o.Headers.Add("Cookie"));
+builder.Services.AddHeaderPropagation(o => o.Headers.Add("Cookie"));
+builder.Services.AddControllers().AddOData(o =>
+{
+    var oDataBuilder = new ODataConventionModelBuilder();
 
-        modelBuilder.EntitySet<ApplicationUser>("ApplicationUsers");
-        var usersType = modelBuilder.StructuralTypes.First(x => x.ClrType == typeof(ApplicationUser));
-        usersType.AddProperty(typeof(ApplicationUser).GetProperty(nameof(ApplicationUser.Password)));
-        usersType.AddProperty(typeof(ApplicationUser).GetProperty(nameof(ApplicationUser.ConfirmPassword)));
+    oDataBuilder.EntitySet<ApplicationUser>("ApplicationUsers");
+    var usersType = oDataBuilder.StructuralTypes.First(x => x.ClrType == typeof(ApplicationUser));
+    usersType.AddProperty(typeof(ApplicationUser).GetProperty(nameof(ApplicationUser.Password)));
+    usersType.AddProperty(typeof(ApplicationUser).GetProperty(nameof(ApplicationUser.ConfirmPassword)));
 
-        modelBuilder.EntitySet<ApplicationRole>("ApplicationRoles");
+    oDataBuilder.EntitySet<ApplicationRole>("ApplicationRoles");
 
-        options.AddRouteComponents("odata/Identity", modelBuilder.GetEdmModel()).Count().Filter().OrderBy().Expand().Select().SetMaxTop(null).TimeZone = TimeZoneInfo.Utc;
-    });
+    o.AddRouteComponents("odata/Identity", oDataBuilder.GetEdmModel()).Count().Filter().OrderBy().Expand().Select().SetMaxTop(null).TimeZone = TimeZoneInfo.Utc;
+});
 
 var app = builder.Build();
-
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
