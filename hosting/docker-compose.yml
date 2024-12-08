@@ -1,0 +1,16 @@
+services:
+    ctm:
+        image: docker.io/florianscholzsrssoftware/christmas-tree-manager:latest
+        container_name: christmas-tree-manager
+        restart: always
+        tty: true
+        ports:
+            - 8000:80
+            - 8001:443
+        volumes:
+            - .:/app/mnt/
+        environment:
+            - ASPNETCORE_URLS=http://+;https://+
+            - ASPNETCORE_HTTPS_PORT=8001
+            - ASPNETCORE_Kestrel__Certificates__Default__Password=ctm
+            - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/mnt/https/aspnetapp.pfx
