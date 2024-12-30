@@ -2,7 +2,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Mvc;
-using QuestPDF.Companion;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -107,11 +106,8 @@ public class ExportService
             });
         });
 
-        // instead of the standard way of generating a PDF file
-        document.GeneratePdf($"{fileName}.pdf");
-
         // use the following invocation
-        document.ShowInCompanion();
+        //document.ShowInCompanion();
 
         var result = new FileStreamResult(new MemoryStream(document.GeneratePdf()), "text/pdf");
         result.FileDownloadName = (!string.IsNullOrEmpty(fileName) ? fileName : "Export") + ".pdf";
