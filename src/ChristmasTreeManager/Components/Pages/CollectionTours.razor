@@ -56,7 +56,6 @@
             var uri = query.ToUrl($"export/collectiontours/csv(fileName='{UrlEncoder.Default.Encode("CollectionTours")}')");
             NavigationManager.NavigateTo(uri, true);
         }
-
         if (args == null || args.Value == "xlsx")
         {
             var uri = query.ToUrl($"export/collectiontours/excel(fileName='{UrlEncoder.Default.Encode("CollectionTours")}')");

@@ -2,6 +2,10 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Mvc;
+using QuestPDF.Companion;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 using System.Data;
 using System.Globalization;
 using System.Linq.Dynamic.Core;
@@ -51,6 +55,67 @@ public class ExportService
         }
 
         return query;
+    }
+
+    public static FileStreamResult CollectionToursToPDF(IQueryable query, string? fileName = null, string? collectionTourName = null)
+    {
+        // code in your main method
+        var document = QuestPDF.Fluent.Document.Create(container =>
+        {
+            container.Page(page =>
+            {
+                page.Size(PageSizes.A4);
+                page.MarginHorizontal(1.5f, Unit.Centimetre);
+                page.MarginTop(4.2f, Unit.Centimetre);
+                page.MarginBottom(2.0f, Unit.Centimetre);
+                page.DefaultTextStyle(TextStyle.Default.FontSize(11));
+
+                page.Background()
+                    .AlignTop()
+                    .ExtendHorizontal()
+                    .Image(Path.Combine(Environment.CurrentDirectory, "wwwroot", "images", "pdf-background.png"));
+
+                page.Header()
+                    .Text($"Sammeltour: {collectionTourName}")
+                    .FontSize(22).FontColor("#231F20");
+
+                page.Content()
+                    .PaddingTop(0.5f, Unit.Centimetre)
+                    .Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.RelativeColumn(4);
+                            columns.RelativeColumn(3);
+                            columns.ConstantColumn(0.5f, Unit.Centimetre);
+                            columns.RelativeColumn(3);
+                        });
+
+                        uint treeSum = 0;
+                        foreach (var item in query)
+                        {
+                            table.Cell().Border(1).AlignMiddle().PaddingLeft(2).Text($"{GetValue(item, "Address")}".Trim()).FontSize(10);
+                            table.Cell().Border(1).AlignMiddle().PaddingLeft(2).Text($"{GetValue(item, "Customer")}".Trim());
+                            table.Cell().Border(1).AlignMiddle().AlignCenter().Text($"{GetValue(item, "TreeCount")}".Trim());
+                            table.Cell().Border(1).AlignMiddle().PaddingLeft(2).Text($"{GetValue(item, "Comment")}".Trim());
+                            treeSum += (uint)GetValue(item, "TreeCount");
+                        }
+
+                        table.Cell().ColumnSpan(2).AlignMiddle().AlignRight().Padding(2).Text("Summe Bäume:").FontSize(14).FontColor("#C30707");
+                        table.Cell().ColumnSpan(2).AlignMiddle().AlignLeft().PaddingLeft(3).Text(treeSum.ToString()).FontSize(14).FontColor("#C30707");
+                    });
+            });
+        });
+
+        // instead of the standard way of generating a PDF file
+        document.GeneratePdf($"{fileName}.pdf");
+
+        // use the following invocation
+        document.ShowInCompanion();
+
+        var result = new FileStreamResult(new MemoryStream(document.GeneratePdf()), "text/pdf");
+        result.FileDownloadName = (!string.IsNullOrEmpty(fileName) ? fileName : "Export") + ".pdf";
+        return result;
     }
 
     public FileStreamResult ToCSV(IQueryable query, string? fileName = null)
@@ -182,7 +247,6 @@ public class ExportService
         return result;
     }
 
-
     public static object GetValue(object target, string name)
     {
         return target.GetType().GetProperty(name)!.GetValue(target)!;
@@ -254,10 +318,10 @@ public class ExportService
         stylesheet1.AddNamespaceDeclaration("x16r2", "http://schemas.microsoft.com/office/spreadsheetml/2015/02/main");
         stylesheet1.AddNamespaceDeclaration("xr", "http://schemas.microsoft.com/office/spreadsheetml/2014/revision");
 
-        var fonts1 = new Fonts() { Count = (UInt32Value)1U, KnownFonts = true };
+        var fonts1 = new DocumentFormat.OpenXml.Spreadsheet.Fonts() { Count = (UInt32Value)1U, KnownFonts = true };
         var font1 = new DocumentFormat.OpenXml.Spreadsheet.Font();
         var fontSize1 = new FontSize() { Val = 11D };
-        var color1 = new Color() { Theme = (UInt32Value)1U };
+        var color1 = new DocumentFormat.OpenXml.Office2010.Excel.Color() { Theme = (UInt32Value)1U };
         var fontName1 = new FontName() { Val = "Calibri" };
         var fontFamilyNumbering1 = new FontFamilyNumbering() { Val = 2 };
         var fontScheme1 = new FontScheme() { Val = FontSchemeValues.Minor };

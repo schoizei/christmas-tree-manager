@@ -28,6 +28,13 @@ public partial class ExportController : Controller
         return _exportService.ToCSV(await _applicationDbService.GetRegistrationsForCollectionTour(collectionTourId), fileName);
     }
 
+    [HttpGet("export/collectiontours/{collectionTourId}/registrations/pdf")]
+    [HttpGet("export/collectiontours/{collectionTourId}/registrations/pdf(fileName='{fileName}',collectionTourName='{collectionTourName}')")]
+    public async Task<FileStreamResult> ExportCollectionToursToPDF(string collectionTourId, string? fileName = null, string? collectionTourName = null)
+    {
+        return _exportService.CollectionToursToPDF(await _applicationDbService.GetRegistrationsForCollectionTour(collectionTourId), fileName, collectionTourName);
+    }
+
     [HttpGet("/export/collectiontours/excel")]
     [HttpGet("/export/collectiontours/excel(fileName='{fileName}')")]
     public async Task<FileStreamResult> ExportCollectionToursToExcel(string? fileName = null)

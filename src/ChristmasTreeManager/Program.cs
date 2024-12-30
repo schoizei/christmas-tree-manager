@@ -11,6 +11,8 @@ using Microsoft.OData.ModelBuilder;
 using Radzen;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
