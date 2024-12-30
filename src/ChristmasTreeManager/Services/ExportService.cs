@@ -57,7 +57,7 @@ public class ExportService
         return query;
     }
 
-    public static FileStreamResult CollectionToursToPDF(IQueryable query, string? fileName = null, string? collectionTourName = null)
+    public FileStreamResult CollectionToursToPDF(IQueryable query, string? fileName = null, string? collectionTourName = null)
     {
         // code in your main method
         var document = QuestPDF.Fluent.Document.Create(container =>

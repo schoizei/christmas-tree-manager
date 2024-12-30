@@ -70,11 +70,11 @@
     protected bool successVisible;
 
     [Inject]
-    protected SecurityService Security { get; set; }
+    protected SecurityService Security { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
-        user = await Security.GetUserById($"{Security.User.Id!}");
+        user = await Security.GetUserById($"{Security.User.Id}");
     }
 
     protected async Task FormSubmit()
