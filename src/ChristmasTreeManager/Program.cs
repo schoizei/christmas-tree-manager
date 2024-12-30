@@ -14,9 +14,11 @@ using Toolbelt.Blazor.Extensions.DependencyInjection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
+builder.Services
+    .AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddHubOptions(options => options.MaximumReceiveMessageSize = 10 * 1024 * 1024);
+
 builder.Services.AddControllers();
 builder.Services.AddRadzenComponents();
 builder.Services.AddHotKeys2();

@@ -18,8 +18,11 @@
 
         do
         {
-            newRegistration = await DialogService.OpenAsync<AddRegistration>("Neue Anmeldung",
-            new Dictionary<string, object?>() { { "PreviousRegistration", newRegistration } }) as Registration;
+            newRegistration = await DialogService.OpenAsync<AddRegistration>(
+                "Neue Anmeldung",
+                new Dictionary<string, object?>() { { "PreviousRegistration", newRegistration } },
+                new(){ AutoFocusFirstElement = false }) as Registration;
+
             if (newRegistration is null) return;
         }
         while (newRegistration is not null && newRegistration.ContinueToNew);
