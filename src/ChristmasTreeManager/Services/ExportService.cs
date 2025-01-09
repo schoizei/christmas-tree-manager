@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Linq.Dynamic.Core;
 using System.Reflection;
 using System.Text;
+using Fonts = QuestPDF.Helpers.Fonts;
 
 namespace ChristmasTreeManager.Services;
 
@@ -68,7 +69,7 @@ public class ExportService
                 page.MarginHorizontal(1.5f, Unit.Centimetre);
                 page.MarginTop(4.2f, Unit.Centimetre);
                 page.MarginBottom(2.0f, Unit.Centimetre);
-                page.DefaultTextStyle(TextStyle.Default.FontFamily("Arial").FontSize(11));
+                page.DefaultTextStyle(TextStyle.Default.FontFamily(Fonts.Arial).FontSize(11));
                 page.Background()
                     .AlignTop()
                     .ExtendHorizontal()
@@ -102,7 +103,7 @@ public class ExportService
                             {
                                 text.DefaultTextStyle(x => x.FontSize(12));
 
-                                text.Span("Schriftführer: ").ExtraBold();
+                                text.Span(Encoding.UTF8.GetString(Encoding.Default.GetBytes("Schriftführer: "))).ExtraBold();
                                 text.Span(data.TeamLeader);
                             });
                             column.Item().Text(text =>
@@ -167,7 +168,7 @@ public class ExportService
                 page.MarginHorizontal(1.5f, Unit.Centimetre);
                 page.MarginTop(4.2f, Unit.Centimetre);
                 page.MarginBottom(2.0f, Unit.Centimetre);
-                page.DefaultTextStyle(TextStyle.Default.FontFamily("Arial").FontSize(11));
+                page.DefaultTextStyle(TextStyle.Default.FontFamily(Fonts.Arial).FontSize(11));
                 page.Background()
                     .AlignTop()
                     .ExtendHorizontal()

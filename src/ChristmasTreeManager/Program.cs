@@ -8,15 +8,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OData.ModelBuilder;
-using QuestPDF.Drawing;
 using Radzen;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
-FontManager.RegisterFont(File.OpenRead("Fonts/Arial/Arial.ttf"));
-FontManager.RegisterFont(File.OpenRead("Fonts/Arial/ArialBold.ttf"));
-FontManager.RegisterFont(File.OpenRead("Fonts/Arial/ArialItalic.ttf"));
-FontManager.RegisterFont(File.OpenRead("Fonts/Arial/ArialBoldItalic.ttf"));
 
 var builder = WebApplication.CreateBuilder(args);
 
