@@ -212,6 +212,29 @@ public class ApplicationDbService(ApplicationDbContext context)
         return await Task.FromResult(items.Select(CollectionTour.FromEntity).AsQueryable());
     }
 
+    public async Task<CollectionTourExport?> GetCollectionTourExport(string collectionTourId)
+    {
+        var collectionTourEntity = await GetCollectionTourById(collectionTourId);
+        if (collectionTourEntity is null) return null;
+
+        var registrations = await GetRegistrationEntities()
+            .Join(GetStreetEntities(),
+                registration => registration.StreetId, street => street.Id,
+                (registration, street) => new { Registration = registration, Street = street })
+            .Where(joinResult => joinResult.Street.CollectionTourId == collectionTourId)
+            .Select(joinResult => joinResult.Registration)
+            .Include(x => x.Street)
+            .Include(x => x.RegistrationPoint)
+            .OrderBy(x => x.Street.CollectionTourOrderNumber)
+            .ThenBy(x => x.Street.Name)
+            .ThenBy(x => x.Housenumber)
+            .ToListAsync();
+
+        return CollectionTourExport.Create(
+            collectionTourEntity,
+            registrations.Select(RegistrationExport.FromEntity).ToList());
+    }
+
     public async Task<CollectionTour?> GetCollectionTourById(string id)
     {
         var items = _context.CollectionTours
@@ -314,6 +337,21 @@ public class ApplicationDbService(ApplicationDbContext context)
         }
 
         return await Task.FromResult(items.Select(DistributionTour.FromEntity).AsQueryable());
+    }
+
+    public async Task<DistributionTourExport?> GetDistributionTourExport(string distributionTourId)
+    {
+        var distributionTour = await GetDistributionTourById(distributionTourId);
+        if (distributionTour is null) return null;
+
+        var streets = await GetStreetEntities()
+            .Where(x => x.DistributionTourId == distributionTourId)
+            .OrderBy(x => x.Name)
+            .ToListAsync();
+
+        return DistributionTourExport.Create(
+            distributionTour,
+            streets.Select(Street.FromEntity).ToList());
     }
 
 

@@ -37,7 +37,7 @@
         }
         if (args == null || args.Value == "pdf")
         {
-            var uri = $"export/collectiontours/{collectionTourId}/registrations/pdf(fileName='{UrlEncoder.Default.Encode(filename)}',collectionTourName='{collectionTour.Name}')";
+            var uri = $"export/collectiontours/{collectionTourId}/registrations/pdf(fileName='{UrlEncoder.Default.Encode(filename)}')";
             NavigationManager.NavigateTo(uri, true);
         }
     }}

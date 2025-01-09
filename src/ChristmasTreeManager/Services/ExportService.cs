@@ -1,7 +1,9 @@
+using ChristmasTreeManager.Models;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Mvc;
+using QuestPDF.Companion;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -56,7 +58,7 @@ public class ExportService
         return query;
     }
 
-    public FileStreamResult CollectionToursToPDF(IQueryable query, string? fileName = null, string? collectionTourName = null)
+    public FileStreamResult CollectionToursToPDF(CollectionTourExport? data, string? fileName = null)
     {
         // code in your main method
         var document = QuestPDF.Fluent.Document.Create(container =>
@@ -74,35 +76,155 @@ public class ExportService
                     .ExtendHorizontal()
                     .Image(Path.Combine(Environment.CurrentDirectory, "wwwroot", "images", "pdf-background.png"));
 
-                page.Header()
-                    .Text($"Sammeltour: {collectionTourName}")
-                    .FontSize(22).FontColor("#231F20");
+                if (data is not null)
+                {
+                    page.Header()
+                        .Text($"Sammeltour: {data.Name}")
+                        .FontSize(22).FontColor("#231F20");
 
-                page.Content()
-                    .PaddingTop(0.5f, Unit.Centimetre)
-                    .Table(table =>
-                    {
-                        table.ColumnsDefinition(columns =>
+                    page.Content()
+                        .PaddingTop(0.5f, Unit.Centimetre)
+                        .Column(column =>
                         {
-                            columns.RelativeColumn(4);
-                            columns.RelativeColumn(3);
-                            columns.ConstantColumn(0.5f, Unit.Centimetre);
-                            columns.RelativeColumn(3);
+                            column.Item().Text(text =>
+                            {
+                                text.DefaultTextStyle(x => x.FontSize(12));
+
+                                text.Span("Fahrer: ").ExtraBold();
+                                text.Span(data.Driver);
+                                text.Span(" mit ");
+                                text.Span(data.Vehicle);
+                            });
+                            column.Item().Text(text =>
+                            {
+                                text.DefaultTextStyle(x => x.FontSize(12));
+
+                                text.Span("Schriftführer: ").ExtraBold();
+                                text.Span(data.TeamLeader);
+                            });
+                            column.Item().Text(text =>
+                            {
+                                text.DefaultTextStyle(x => x.FontSize(12));
+
+                                text.Span("Team: ").ExtraBold();
+                                text.Span(data.Staff);
+                            });
+                            column.Item().Text(text =>
+                            {
+                                text.DefaultTextStyle(x => x.FontSize(12));
+
+                                text.Span("Bäume: ").ExtraBold();
+                                text.Span(data.Registrations.Sum(x => x.TreeCount).ToString());
+                            });
+
+                            column.Item().PaddingTop(0.5f, Unit.Centimetre).Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn(4);
+                                    columns.RelativeColumn(3);
+                                    columns.ConstantColumn(0.5f, Unit.Centimetre);
+                                    columns.RelativeColumn(3);
+                                });
+
+                                uint treeSum = 0;
+                                foreach (var item in data.Registrations)
+                                {
+                                    table.Cell().Border(1).AlignMiddle().PaddingLeft(2).Text($"{item.Address}".Trim()).FontSize(10);
+                                    table.Cell().Border(1).AlignMiddle().PaddingLeft(2).Text($"{item.Customer}".Trim());
+                                    table.Cell().Border(1).AlignMiddle().AlignCenter().Text($"{item.TreeCount}".Trim());
+                                    table.Cell().Border(1).AlignMiddle().PaddingLeft(2).Text($"{item.Comment}".Trim());
+                                    treeSum += item.TreeCount;
+                                }
+
+                                table.Cell().ColumnSpan(2).AlignMiddle().AlignRight().Padding(2).Text("Summe Bäume:").FontSize(14).FontColor("#C30707");
+                                table.Cell().ColumnSpan(2).AlignMiddle().AlignLeft().PaddingLeft(3).Text(treeSum.ToString()).FontSize(14).FontColor("#C30707");
+                            });
                         });
+                }
+            });
+        });
 
-                        uint treeSum = 0;
-                        foreach (var item in query)
+        // use the following invocation
+        document.ShowInCompanion();
+
+        var result = new FileStreamResult(new MemoryStream(document.GeneratePdf()), "text/pdf");
+        result.FileDownloadName = (!string.IsNullOrEmpty(fileName) ? fileName : "Export") + ".pdf";
+        return result;
+    }
+
+    public FileStreamResult DistributionToursToPDF(DistributionTourExport? data, string? fileName = null)
+    {
+        // code in your main method
+        var document = QuestPDF.Fluent.Document.Create(container =>
+        {
+            container.Page(page =>
+            {
+                page.Size(PageSizes.A4);
+                page.MarginHorizontal(1.5f, Unit.Centimetre);
+                page.MarginTop(4.2f, Unit.Centimetre);
+                page.MarginBottom(2.0f, Unit.Centimetre);
+                page.DefaultTextStyle(TextStyle.Default.FontSize(11));
+
+                page.Background()
+                    .AlignTop()
+                    .ExtendHorizontal()
+                    .Image(Path.Combine(Environment.CurrentDirectory, "wwwroot", "images", "pdf-background.png"));
+
+                if (data is not null)
+                {
+                    page.Header()
+                        .Text($"Zetteltour: {data.Name}")
+                        .FontSize(22).FontColor("#231F20");
+
+                    page.Content()
+                        .PaddingTop(0.5f, Unit.Centimetre)
+                        .Column(column =>
                         {
-                            table.Cell().Border(1).AlignMiddle().PaddingLeft(2).Text($"{GetValue(item, "Address")}".Trim()).FontSize(10);
-                            table.Cell().Border(1).AlignMiddle().PaddingLeft(2).Text($"{GetValue(item, "Customer")}".Trim());
-                            table.Cell().Border(1).AlignMiddle().AlignCenter().Text($"{GetValue(item, "TreeCount")}".Trim());
-                            table.Cell().Border(1).AlignMiddle().PaddingLeft(2).Text($"{GetValue(item, "Comment")}".Trim());
-                            treeSum += (uint)GetValue(item, "TreeCount");
-                        }
+                            column.Item().Text(text =>
+                            {
+                                text.DefaultTextStyle(x => x.FontSize(12));
 
-                        table.Cell().ColumnSpan(2).AlignMiddle().AlignRight().Padding(2).Text("Summe Bäume:").FontSize(14).FontColor("#C30707");
-                        table.Cell().ColumnSpan(2).AlignMiddle().AlignLeft().PaddingLeft(3).Text(treeSum.ToString()).FontSize(14).FontColor("#C30707");
-                    });
+                                text.Span("Team: ").ExtraBold();
+                                text.Span(data.Staff);
+                            });
+
+                            column.Item().PaddingTop(0.5f, Unit.Centimetre).Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn(2);
+                                    columns.RelativeColumn(4);
+                                    columns.ConstantColumn(1.0f, Unit.Centimetre);
+
+                                    columns.RelativeColumn(1);
+
+                                    columns.RelativeColumn(2);
+                                    columns.RelativeColumn(4);
+                                    columns.ConstantColumn(1.0f, Unit.Centimetre);
+                                });
+
+                                uint formCount = 0;
+                                foreach (var item in data.Streets)
+                                {
+                                    table.Cell().Border(1).AlignMiddle().PaddingLeft(2).Text($"{item.City}".Trim()).FontSize(10);
+                                    table.Cell().Border(1).AlignMiddle().PaddingLeft(2).Text($"{item.Name}".Trim());
+                                    table.Cell().Border(1).AlignMiddle().AlignCenter().Text($"{item.DistributionTourFormCount}".Trim());
+                                    table.Cell().Border(0).AlignMiddle().PaddingLeft(2);
+                                    table.Cell().Border(1).AlignMiddle().PaddingLeft(2).Text($"{item.City}".Trim()).FontSize(10);
+                                    table.Cell().Border(1).AlignMiddle().PaddingLeft(2).Text($"{item.Name}".Trim());
+                                    table.Cell().Border(1).AlignMiddle().AlignCenter().Text($"{item.DistributionTourFormCount}".Trim());
+                                    formCount += item.DistributionTourFormCount;
+                                }
+
+                                table.Cell().ColumnSpan(2).AlignMiddle().AlignRight().Padding(2).Text("Summe Zettel:").FontSize(14).FontColor("#C30707");
+                                table.Cell().ColumnSpan(2).AlignMiddle().AlignLeft().PaddingLeft(3).Text(formCount.ToString()).FontSize(14).FontColor("#C30707");
+
+                                table.Cell().ColumnSpan(2).AlignMiddle().AlignRight().Padding(2).Text("Summe Zettel:").FontSize(14).FontColor("#C30707");
+                                table.Cell().ColumnSpan(1).AlignMiddle().AlignLeft().PaddingLeft(3).Text(formCount.ToString()).FontSize(14).FontColor("#C30707");
+                            });
+                        });
+                }
             });
         });
 

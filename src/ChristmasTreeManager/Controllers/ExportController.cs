@@ -29,10 +29,10 @@ public partial class ExportController : Controller
     }
 
     [HttpGet("export/collectiontours/{collectionTourId}/registrations/pdf")]
-    [HttpGet("export/collectiontours/{collectionTourId}/registrations/pdf(fileName='{fileName}',collectionTourName='{collectionTourName}')")]
-    public async Task<FileStreamResult> ExportCollectionToursToPDF(string collectionTourId, string? fileName = null, string? collectionTourName = null)
+    [HttpGet("export/collectiontours/{collectionTourId}/registrations/pdf(fileName='{fileName}')")]
+    public async Task<FileStreamResult> ExportCollectionToursToPDF(string collectionTourId, string? fileName = null)
     {
-        return _exportService.CollectionToursToPDF(await _applicationDbService.GetRegistrationsForCollectionTour(collectionTourId), fileName, collectionTourName);
+        return _exportService.CollectionToursToPDF(await _applicationDbService.GetCollectionTourExport(collectionTourId), fileName);
     }
 
     [HttpGet("/export/collectiontours/excel")]
@@ -61,6 +61,13 @@ public partial class ExportController : Controller
     public async Task<FileStreamResult> ExportDistributionToursToExcel(string? fileName = null)
     {
         return _exportService.ToExcel(await _applicationDbService.GetDistributionTours(_exportService.ExtractQuery(Request.Query)), fileName);
+    }
+
+    [HttpGet("export/distributiontours/{distributionTourId}/streets/pdf")]
+    [HttpGet("export/distributiontours/{distributionTourId}/streets/pdf(fileName='{fileName}')")]
+    public async Task<FileStreamResult> ExportDistributionToursToPDF(string distributionTourId, string? fileName = null)
+    {
+        return _exportService.DistributionToursToPDF(await _applicationDbService.GetDistributionTourExport(distributionTourId), fileName);
     }
 
     [HttpGet("/export/registrationpoints/csv")]
