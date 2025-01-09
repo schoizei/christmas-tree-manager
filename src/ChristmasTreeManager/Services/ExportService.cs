@@ -102,7 +102,7 @@ public class ExportService
                             {
                                 text.DefaultTextStyle(x => x.FontSize(12));
 
-                                text.Span("Schriftführer: ").ExtraBold().FontFamily("Arial");
+                                text.Span("Schriftführer: ");
                                 text.Span(data.TeamLeader);
                             });
                             column.Item().Text(text =>
@@ -116,7 +116,7 @@ public class ExportService
                             {
                                 text.DefaultTextStyle(x => x.FontSize(12));
 
-                                text.Span("Bäume: ").ExtraBold();
+                                text.Span("Bäume: ").Bold();
                                 text.Span(data.Registrations.Sum(x => x.TreeCount).ToString());
                             });
 
