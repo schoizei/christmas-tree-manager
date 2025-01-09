@@ -68,8 +68,10 @@ public class ExportService
                 page.MarginHorizontal(1.5f, Unit.Centimetre);
                 page.MarginTop(4.2f, Unit.Centimetre);
                 page.MarginBottom(2.0f, Unit.Centimetre);
-                page.DefaultTextStyle(TextStyle.Default.FontSize(11));
-
+                page.DefaultTextStyle(x => x
+                    .FontSize(11)
+                    .FontFamily("Arial")
+                    .FontFamily("Calibri", "Times New Roman"));
                 page.Background()
                     .AlignTop()
                     .ExtendHorizontal()
@@ -163,8 +165,10 @@ public class ExportService
                 page.MarginHorizontal(1.5f, Unit.Centimetre);
                 page.MarginTop(4.2f, Unit.Centimetre);
                 page.MarginBottom(2.0f, Unit.Centimetre);
-                page.DefaultTextStyle(TextStyle.Default.FontSize(11));
-
+                page.DefaultTextStyle(x => x
+                    .FontSize(11)
+                    .FontFamily("Arial")
+                    .FontFamily("Calibri", "Times New Roman"));
                 page.Background()
                     .AlignTop()
                     .ExtendHorizontal()

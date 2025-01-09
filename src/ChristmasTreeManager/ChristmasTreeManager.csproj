@@ -8,20 +8,6 @@
   </PropertyGroup>
 	
   <ItemGroup>
-    <None Remove="Fonts\Arial\Arial.ttf" />
-    <None Remove="Fonts\Arial\ArialBold.ttf" />
-    <None Remove="Fonts\Arial\ArialBoldItalic.ttf" />
-    <None Remove="Fonts\Arial\ArialItalic.ttf" />
-  </ItemGroup>
-	
-  <ItemGroup>
-    <EmbeddedResource Include="Fonts\Arial\Arial.ttf" />
-    <EmbeddedResource Include="Fonts\Arial\ArialBold.ttf" />
-    <EmbeddedResource Include="Fonts\Arial\ArialBoldItalic.ttf" />
-    <EmbeddedResource Include="Fonts\Arial\ArialItalic.ttf" />
-  </ItemGroup>
-	
-  <ItemGroup>
     <PackageReference Include="DocX" Version="3.0.1" />
     <PackageReference Include="QuestPDF" Version="2025.1.0-alpha0" />
     <PackageReference Include="Radzen.Blazor" Version="*" />
