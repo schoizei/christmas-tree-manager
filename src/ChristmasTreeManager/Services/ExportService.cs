@@ -88,16 +88,21 @@ public class ExportService
                             {
                                 text.DefaultTextStyle(x => x.FontSize(12));
 
-                                text.Span("Fahrer: ").ExtraBold();
-                                text.Span(data.Driver);
-                                text.Span(" mit ");
+                                text.Span("Fahrzeug: ").ExtraBold();
                                 text.Span(data.Vehicle);
                             });
                             column.Item().Text(text =>
                             {
                                 text.DefaultTextStyle(x => x.FontSize(12));
 
-                                text.Span("Schriftführer: ").ExtraBold();
+                                text.Span("Fahrer: ").ExtraBold();
+                                text.Span(data.Driver);
+                            });
+                            column.Item().Text(text =>
+                            {
+                                text.DefaultTextStyle(x => x.FontSize(12));
+
+                                text.Span("Schriftführer: ").ExtraBold().FontFamily("Arial");
                                 text.Span(data.TeamLeader);
                             });
                             column.Item().Text(text =>
