@@ -103,7 +103,7 @@ public class ExportService
                             {
                                 text.DefaultTextStyle(x => x.FontSize(12));
 
-                                text.Span("Gruppenleiter: ").ExtraBold();
+                                text.Span("Teamleiter: ").ExtraBold();
                                 text.Span(data.TeamLeader);
                             });
                             column.Item().Text(text =>
