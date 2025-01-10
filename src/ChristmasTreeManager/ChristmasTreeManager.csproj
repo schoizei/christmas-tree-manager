@@ -27,20 +27,5 @@
   <ItemGroup>
     <ProjectReference Include="..\ChristmasTreeManager.Infrastructure.Postgres\ChristmasTreeManager.Infrastructure.Postgres.csproj" />
     <ProjectReference Include="..\ChristmasTreeManager.Infrastructure.Sqlite\ChristmasTreeManager.Infrastructure.Sqlite.csproj" />
-  </ItemGroup>
-	
-  <ItemGroup>
-    <None Update="Fonts\Arial\Arial.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Fonts\Arial\ArialBold.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Fonts\Arial\ArialBoldItalic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Fonts\Arial\ArialItalic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>	
 </Project>
