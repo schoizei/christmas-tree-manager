@@ -18,7 +18,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
-    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor |
+        ForwardedHeaders.XForwardedProto |
+        ForwardedHeaders.XForwardedHost;
     // Wenn du nur bekannten Proxy vertraust:
     // options.KnownProxies.Add(IPAddress.Parse("10.0.4.1")); // Beispiel Nginx-IP
 });
@@ -121,7 +124,6 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.MapControllers();
 app.UseHeaderPropagation();
 app.UseStaticFiles();
