@@ -4,6 +4,7 @@ using ChristmasTreeManager.Infrastructure;
 using ChristmasTreeManager.Infrastructure.Identity;
 using ChristmasTreeManager.Services;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,13 @@ using Toolbelt.Blazor.Extensions.DependencyInjection;
 QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    // Wenn du nur bekannten Proxy vertraust:
+    // options.KnownProxies.Add(IPAddress.Parse("10.0.4.1")); // Beispiel Nginx-IP
+});
 
 // Add services to the container.
 builder.Services
@@ -103,6 +111,7 @@ builder.Services.AddControllers().AddOData(o =>
 });
 
 var app = builder.Build();
+app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
