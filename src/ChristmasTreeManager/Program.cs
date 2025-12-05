@@ -96,10 +96,11 @@ builder.Services
     {
         var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
         var request = httpContextAccessor.HttpContext?.Request;
-
         if (request is not null)
         {
-            var uri = new Uri($"{request.Scheme}://{request.Host}");
+            // Immer HTTPS verwenden, auch wenn der interne Request über HTTP kommt
+            var scheme = request.IsHttps ? "https" : request.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? "https";
+            var uri = new Uri($"{scheme}://{request.Host}");
             client.BaseAddress = uri;
         }
     })
