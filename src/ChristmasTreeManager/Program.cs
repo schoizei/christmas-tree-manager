@@ -22,8 +22,6 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
         ForwardedHeaders.XForwardedFor |
         ForwardedHeaders.XForwardedProto |
         ForwardedHeaders.XForwardedHost;
-    // Wenn du nur bekannten Proxy vertraust:
-    // options.KnownProxies.Add(IPAddress.Parse("10.0.4.1")); // Beispiel Nginx-IP
 });
 
 // Add services to the container.
@@ -40,7 +38,6 @@ builder.Services.AddRadzenCookieThemeService(options =>
     options.Name = "ChristmasTreeManagerTheme";
     options.Duration = TimeSpan.FromDays(365);
 });
-builder.Services.AddHttpClient();
 
 builder.Services
     .AddDbContext<ApplicationDbContext>(options =>
@@ -95,23 +92,36 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddDefaultTokenProviders();
 
 builder.Services
-    .AddHttpClient("ChristmasTreeManager")
+    .AddHttpClient("ChristmasTreeManager", (sp, client) =>
+    {
+        var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
+        var request = httpContextAccessor.HttpContext?.Request;
+
+        if (request is not null)
+        {
+            var uri = new Uri($"{request.Scheme}://{request.Host}");
+            client.BaseAddress = uri;
+        }
+    })
     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false })
     .AddHeaderPropagation(o => o.Headers.Add("Cookie"));
+
 builder.Services.AddHeaderPropagation(o => o.Headers.Add("Cookie"));
-builder.Services.AddControllers().AddOData(o =>
-{
-    var oDataBuilder = new ODataConventionModelBuilder();
+builder.Services
+    .AddControllers()
+    .AddOData(o =>
+    {
+        var oDataBuilder = new ODataConventionModelBuilder();
 
-    oDataBuilder.EntitySet<ApplicationUser>("ApplicationUsers");
-    var usersType = oDataBuilder.StructuralTypes.First(x => x.ClrType == typeof(ApplicationUser));
-    usersType.AddProperty(typeof(ApplicationUser).GetProperty(nameof(ApplicationUser.Password)));
-    usersType.AddProperty(typeof(ApplicationUser).GetProperty(nameof(ApplicationUser.ConfirmPassword)));
+        oDataBuilder.EntitySet<ApplicationUser>("ApplicationUsers");
+        var usersType = oDataBuilder.StructuralTypes.First(x => x.ClrType == typeof(ApplicationUser));
+        usersType.AddProperty(typeof(ApplicationUser).GetProperty(nameof(ApplicationUser.Password)));
+        usersType.AddProperty(typeof(ApplicationUser).GetProperty(nameof(ApplicationUser.ConfirmPassword)));
 
-    oDataBuilder.EntitySet<ApplicationRole>("ApplicationRoles");
+        oDataBuilder.EntitySet<ApplicationRole>("ApplicationRoles");
 
-    o.AddRouteComponents("odata/Identity", oDataBuilder.GetEdmModel()).Count().Filter().OrderBy().Expand().Select().SetMaxTop(null).TimeZone = TimeZoneInfo.Utc;
-});
+        o.AddRouteComponents("odata/Identity", oDataBuilder.GetEdmModel()).Count().Filter().OrderBy().Expand().Select().SetMaxTop(null).TimeZone = TimeZoneInfo.Utc;
+    });
 
 var app = builder.Build();
 app.UseForwardedHeaders();
