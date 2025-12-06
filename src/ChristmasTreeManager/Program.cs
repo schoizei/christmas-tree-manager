@@ -98,8 +98,11 @@ builder.Services
         var request = httpContextAccessor.HttpContext?.Request;
         if (request is not null)
         {
-            // Immer HTTPS verwenden, auch wenn der interne Request über HTTP kommt
-            var scheme = request.IsHttps ? "https" : request.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? "https";
+            // Prefer X-Forwarded-Proto header (set by reverse proxy), then check IsHttps, default to https
+            var forwardedProto = request.Headers["X-Forwarded-Proto"].FirstOrDefault();
+            var scheme = !string.IsNullOrEmpty(forwardedProto) 
+                ? forwardedProto 
+                : (request.IsHttps ? "https" : "https"); // Default to https for security
             var uri = new Uri($"{scheme}://{request.Host}");
             client.BaseAddress = uri;
         }
