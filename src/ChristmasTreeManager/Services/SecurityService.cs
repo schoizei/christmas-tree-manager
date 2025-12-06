@@ -17,8 +17,9 @@ public class SecurityService
 
     public SecurityService(NavigationManager navigationManager, IHttpClientFactory factory)
     {
-        _baseUri = new Uri($"{navigationManager.BaseUri}odata/Identity/");
         _httpClient = factory.CreateClient("ChristmasTreeManager");
+        var baseAddress = _httpClient.BaseAddress ?? new Uri(navigationManager.BaseUri);
+        _baseUri = new Uri(baseAddress, "odata/Identity/");
         _navigationManager = navigationManager;
     }
 
