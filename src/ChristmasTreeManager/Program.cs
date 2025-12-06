@@ -91,6 +91,10 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<IdentityDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddHttpContextAccessor();
+
+var isDevelopment = builder.Environment.IsDevelopment();
+
 builder.Services
     .AddHttpClient("ChristmasTreeManager", (sp, client) =>
     {
@@ -98,11 +102,20 @@ builder.Services
         var request = httpContextAccessor.HttpContext?.Request;
         if (request is not null)
         {
-            // Prefer X-Forwarded-Proto header (set by reverse proxy), then check IsHttps, default to https
-            var forwardedProto = request.Headers["X-Forwarded-Proto"].FirstOrDefault();
-            var scheme = !string.IsNullOrEmpty(forwardedProto) 
-                ? forwardedProto 
-                : (request.IsHttps ? "https" : "https"); // Default to https for security
+            // In Development: use actual request scheme (allows HTTP)
+            // In Production: prefer X-Forwarded-Proto header, default to HTTPS
+            string scheme;
+            if (isDevelopment)
+            {
+                scheme = request.Scheme; // Use actual scheme (http or https)
+            }
+            else
+            {
+                var forwardedProto = request.Headers["X-Forwarded-Proto"].FirstOrDefault();
+                scheme = !string.IsNullOrEmpty(forwardedProto) 
+                    ? forwardedProto 
+                    : "https"; // Default to https in production
+            }
             var uri = new Uri($"{scheme}://{request.Host}");
             client.BaseAddress = uri;
         }

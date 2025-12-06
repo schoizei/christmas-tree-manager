@@ -12,14 +12,15 @@ namespace ChristmasTreeManager.Services;
 public class SecurityService
 {
     private readonly HttpClient _httpClient;
-    private readonly Uri _baseUri;
+    private readonly Uri _baseAddress;
+    private readonly Uri _baseIdentityUri;
     private readonly NavigationManager _navigationManager;
 
     public SecurityService(NavigationManager navigationManager, IHttpClientFactory factory)
     {
         _httpClient = factory.CreateClient("ChristmasTreeManager");
-        var baseAddress = _httpClient.BaseAddress ?? new Uri(navigationManager.BaseUri);
-        _baseUri = new Uri(baseAddress, "odata/Identity/");
+        _baseAddress = _httpClient.BaseAddress ?? new Uri(navigationManager.BaseUri);
+        _baseIdentityUri = new Uri(_baseAddress, "odata/Identity/");
         _navigationManager = navigationManager;
     }
 
@@ -84,7 +85,7 @@ public class SecurityService
 
     public async Task<ApplicationAuthenticationState> GetAuthenticationStateAsync()
     {
-        var uri = new Uri($"{_navigationManager.BaseUri}Account/CurrentUser");
+        var uri = new Uri(_baseAddress, "Account/CurrentUser");
 
         var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, uri));
 
@@ -103,7 +104,7 @@ public class SecurityService
 
     public async Task<IEnumerable<ApplicationRole>> GetRoles()
     {
-        var uri = new Uri(_baseUri, $"ApplicationRoles");
+        var uri = new Uri(_baseIdentityUri, $"ApplicationRoles");
 
         uri = uri.GetODataUri();
 
@@ -116,7 +117,7 @@ public class SecurityService
 
     public async Task<ApplicationRole> CreateRole(ApplicationRole role)
     {
-        var uri = new Uri(_baseUri, $"ApplicationRoles");
+        var uri = new Uri(_baseIdentityUri, $"ApplicationRoles");
 
         var content = new StringContent(ODataJsonSerializer.Serialize(role), Encoding.UTF8, "application/json");
 
@@ -127,14 +128,14 @@ public class SecurityService
 
     public async Task<HttpResponseMessage> DeleteRole(string id)
     {
-        var uri = new Uri(_baseUri, $"ApplicationRoles('{id}')");
+        var uri = new Uri(_baseIdentityUri, $"ApplicationRoles('{id}')");
 
         return await _httpClient.DeleteAsync(uri);
     }
 
     public async Task<IEnumerable<ApplicationUser>> GetUsers()
     {
-        var uri = new Uri(_baseUri, $"ApplicationUsers");
+        var uri = new Uri(_baseIdentityUri, $"ApplicationUsers");
 
 
         uri = uri.GetODataUri();
@@ -148,7 +149,7 @@ public class SecurityService
 
     public async Task<ApplicationUser> CreateUser(ApplicationUser user)
     {
-        var uri = new Uri(_baseUri, $"ApplicationUsers");
+        var uri = new Uri(_baseIdentityUri, $"ApplicationUsers");
 
         var content = new StringContent(JsonSerializer.Serialize(user), Encoding.UTF8, "application/json");
 
@@ -159,14 +160,14 @@ public class SecurityService
 
     public async Task<HttpResponseMessage> DeleteUser(string id)
     {
-        var uri = new Uri(_baseUri, $"ApplicationUsers('{id}')");
+        var uri = new Uri(_baseIdentityUri, $"ApplicationUsers('{id}')");
 
         return await _httpClient.DeleteAsync(uri);
     }
 
     public async Task<ApplicationUser?> GetUserById(string id)
     {
-        var uri = new Uri(_baseUri, $"ApplicationUsers('{id}')?$expand=Roles");
+        var uri = new Uri(_baseIdentityUri, $"ApplicationUsers('{id}')?$expand=Roles");
 
         var response = await _httpClient.GetAsync(uri);
 
@@ -180,7 +181,7 @@ public class SecurityService
 
     public async Task<ApplicationUser> UpdateUser(string id, ApplicationUser user)
     {
-        var uri = new Uri(_baseUri, $"ApplicationUsers('{id}')");
+        var uri = new Uri(_baseIdentityUri, $"ApplicationUsers('{id}')");
 
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, uri)
         {
@@ -193,7 +194,7 @@ public class SecurityService
     }
     public async Task ChangePassword(string oldPassword, string newPassword)
     {
-        var uri = new Uri($"{_navigationManager.BaseUri}Account/ChangePassword");
+        var uri = new Uri(_baseAddress, "Account/ChangePassword");
 
         var content = new FormUrlEncodedContent(new Dictionary<string, string> {
                 { "oldPassword", oldPassword },
@@ -212,7 +213,7 @@ public class SecurityService
 
     public async Task Register(string userName, string password)
     {
-        var uri = new Uri($"{_navigationManager.BaseUri}Account/Register");
+        var uri = new Uri(_baseAddress, "Account/Register");
 
         var content = new FormUrlEncodedContent(new Dictionary<string, string> {
                 { "userName", userName },
@@ -231,7 +232,7 @@ public class SecurityService
 
     public async Task ResetPassword(string userName)
     {
-        var uri = new Uri($"{_navigationManager.BaseUri}Account/ResetPassword");
+        var uri = new Uri(_baseAddress, "Account/ResetPassword");
 
         var content = new FormUrlEncodedContent(new Dictionary<string, string> {
                 { "userName", userName }
