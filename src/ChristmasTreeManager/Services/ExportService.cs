@@ -258,7 +258,7 @@ public class ExportService
         }
 
 
-        var result = new FileStreamResult(new MemoryStream(Encoding.Default.GetBytes($"{string.Join(",", columns.Select(c => c.Key))}{Environment.NewLine}{sb.ToString()}")), "text/csv");
+        var result = new FileStreamResult(new MemoryStream(Encoding.Default.GetBytes($"{string.Join(",", columns.Select(c => c.Key))}{Environment.NewLine}{sb}")), "text/csv");
         result.FileDownloadName = (!string.IsNullOrEmpty(fileName) ? fileName : "Export") + ".csv";
 
         return result;
@@ -338,7 +338,7 @@ public class ExportService
                         {
                             stringValue = Convert.ToString(value, CultureInfo.InvariantCulture);
                         }
-                        cell.CellValue = new CellValue(stringValue);
+                        cell.CellValue = new CellValue(stringValue ?? string.Empty);
                         cell.DataType = new EnumValue<CellValues>(CellValues.Number);
                     }
                     else
@@ -390,45 +390,20 @@ public class ExportService
 
         var typeCode = Type.GetTypeCode(underlyingType);
 
-        switch (typeCode)
+        return typeCode switch
         {
-            case TypeCode.Boolean:
-            case TypeCode.Byte:
-            case TypeCode.Char:
-            case TypeCode.DateTime:
-            case TypeCode.Decimal:
-            case TypeCode.Double:
-            case TypeCode.Int16:
-            case TypeCode.Int32:
-            case TypeCode.Int64:
-            case TypeCode.SByte:
-            case TypeCode.Single:
-            case TypeCode.String:
-            case TypeCode.UInt16:
-            case TypeCode.UInt32:
-            case TypeCode.UInt64:
-                return true;
-            default:
-                return false;
-        }
+            TypeCode.Boolean or TypeCode.Byte or TypeCode.Char or TypeCode.DateTime or TypeCode.Decimal or TypeCode.Double or TypeCode.Int16 or TypeCode.Int32 or TypeCode.Int64 or TypeCode.SByte or TypeCode.Single or TypeCode.String or TypeCode.UInt16 or TypeCode.UInt32 or TypeCode.UInt64 => true,
+            _ => false,
+        };
     }
 
     private static bool IsNumeric(TypeCode typeCode)
     {
-        switch (typeCode)
+        return typeCode switch
         {
-            case TypeCode.Decimal:
-            case TypeCode.Double:
-            case TypeCode.Int16:
-            case TypeCode.Int32:
-            case TypeCode.Int64:
-            case TypeCode.UInt16:
-            case TypeCode.UInt32:
-            case TypeCode.UInt64:
-                return true;
-            default:
-                return false;
-        }
+            TypeCode.Decimal or TypeCode.Double or TypeCode.Int16 or TypeCode.Int32 or TypeCode.Int64 or TypeCode.UInt16 or TypeCode.UInt32 or TypeCode.UInt64 => true,
+            _ => false,
+        };
     }
 
     private static void GenerateWorkbookStylesPartContent(WorkbookStylesPart workbookStylesPart1)

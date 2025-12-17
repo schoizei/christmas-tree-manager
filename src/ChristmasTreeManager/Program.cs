@@ -112,8 +112,8 @@ builder.Services
             else
             {
                 var forwardedProto = request.Headers["X-Forwarded-Proto"].FirstOrDefault();
-                scheme = !string.IsNullOrEmpty(forwardedProto) 
-                    ? forwardedProto 
+                scheme = !string.IsNullOrEmpty(forwardedProto)
+                    ? forwardedProto
                     : "https"; // Default to https in production
             }
             var uri = new Uri($"{scheme}://{request.Host}");
